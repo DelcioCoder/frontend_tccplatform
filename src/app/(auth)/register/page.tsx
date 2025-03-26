@@ -121,7 +121,7 @@ export default function RegisterPage() {
 
             <button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-blue-700 to-emerald-600 text-white py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 font-semibold"
+              className="w-full bg-gradient-to-r from-blue-700 to-emerald-600 text-white py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 font-semibold cursor-pointer"
             >
               Criar Conta
             </button>
