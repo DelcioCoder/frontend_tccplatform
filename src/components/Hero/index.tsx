@@ -55,7 +55,7 @@ export default function Hero() {
           }}
         >
           <Link 
-            href="/conectar"
+            href="/connect"
             className="inline-block px-8 py-4 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-2xl"
           >
             Encontre seu Orientador

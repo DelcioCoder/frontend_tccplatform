@@ -33,10 +33,10 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="flex items-center gap-6">
-            <NavLink href="#" icon={<Home className="h-5 w-5" />} text="Início" />
-            <NavLink href="#" icon={<Users className="h-5 w-5" />} text="Conectar" />
-            <NavLink href="#" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
-            <NavLink href="#" icon={<User className="h-5 w-5" />} text="Perfil" />
+            <NavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
+            <NavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
+            <NavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
+            <NavLink href="/profile" icon={<User className="h-5 w-5" />} text="Perfil" />
           </div>
         </div>
 
@@ -71,10 +71,10 @@ export default function Navbar() {
               </div>
 
               <div className="space-y-4">
-                <MobileNavLink href="#" icon={<Home className="h-5 w-5" />} text="Início" />
-                <MobileNavLink href="#" icon={<Users className="h-5 w-5" />} text="Conectar" />
-                <MobileNavLink href="#" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
-                <MobileNavLink href="#" icon={<User className="h-5 w-5" />} text="Perfil" />
+                <MobileNavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
+                <MobileNavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
+                <MobileNavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
+                <MobileNavLink href="/profile" icon={<User className="h-5 w-5" />} text="Perfil" />
               </div>
             </div>
           </div>
