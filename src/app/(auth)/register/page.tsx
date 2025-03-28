@@ -1,29 +1,70 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GraduationCap, Mail, Lock, User, AtSign, UserCheck, BookOpen } from 'lucide-react';
+import { GraduationCap, Mail, Lock, User, AtSign } from 'lucide-react';
 import ChooseUserType from '@/components/ChooseUserType';
+import { RegisterSchema } from '@/schemas/auth';
 
 export default function RegisterPage() {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [userType, setUserType] = useState<'student' | 'advisor'>('student');
+  const [password2, setPassword2] = useState('');
+  const [user_type, setUserType] = useState<'student' | 'advisor'>('student');
+  const [errors, setErrors] = useState<Record<string, string>>({}); // Estado para erros
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      console.error('Passwords do not match');
+
+    // Validação com Zod
+    const validation = RegisterSchema.safeParse({
+      username,
+      email,
+      password,
+      password2,
+      user_type,
+    });
+
+    if (!validation.success) {
+      // Extrair mensagens de erro do Zod
+      const errorMessages: Record<string, string> = {};
+      validation.error.errors.forEach((err) => {
+        const path = err.path[0];
+        errorMessages[path] = err.message;
+      });
+      setErrors(errorMessages);
       return;
     }
-    console.log('Registration attempt:', { 
-      name, 
-      email, 
-      password, 
-      userType 
+
+    // Se a validação passar, limpar os erros
+    setErrors({});
+
+    startTransition(async () => {
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, email, password, password2, user_type }),
+        });
+
+        if (response.ok) {
+          // Redirecionar para a página protegida após login bem-sucedido
+          router.push('/login');
+        } else {
+          // Tratar erros retornados pela API
+          const data = await response.json();
+          setErrors({ general: data.error || 'Erro ao registrar. Tente novamente.' });
+        }
+      } catch (error) {
+        setErrors({ general: 'Erro interno no servidor. Tente novamente mais tarde.' });
+      }
     });
   };
 
@@ -32,10 +73,10 @@ export default function RegisterPage() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className="w-full max-w-5xl flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl"
       >
-        {/* Left Side - Illustration */}
+        {/* Lado Esquerdo - Ilustração */}
         <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-700 to-emerald-600 p-6 md:p-10 flex flex-col justify-between">
           <div className="flex items-center">
             <GraduationCap className="text-white mr-2" size={40} />
@@ -43,7 +84,6 @@ export default function RegisterPage() {
               TCC Connect
             </h1>
           </div>
-          
           <div className="hidden md:block">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Comece sua Jornada Acadêmica
@@ -52,11 +92,10 @@ export default function RegisterPage() {
               Crie sua conta e tenha acesso a ferramentas exclusivas para aprimorar seu trabalho acadêmico.
             </p>
           </div>
-          
           <div className="hidden md:block absolute bottom-10 left-10 right-10 h-1 bg-white/20 rounded-full"></div>
         </div>
 
-        {/* Right Side - Register Form */}
+        {/* Lado Direito - Formulário de Registro */}
         <div className="w-full md:w-1/2 bg-white p-6 md:p-12 flex flex-col justify-center">
           <h2 className="text-2xl md:text-3xl font-montserrat font-bold mb-2 text-gray-800">
             Crie sua Conta
@@ -65,11 +104,13 @@ export default function RegisterPage() {
             Cadastre-se gratuitamente
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* User Type Selection */}
-            <ChooseUserType userType={userType} setUserType={setUserType} />
-            
+          {errors.general && (
+            <div className="text-red-500 mb-4 text-center">{errors.general}</div>
+          )}
 
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Seleção do tipo de usuário */}
+            <ChooseUserType userType={user_type} setUserType={setUserType} />
 
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -77,10 +118,11 @@ export default function RegisterPage() {
                 type="text" 
                 placeholder="Nome completo" 
                 required 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.username ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
               />
+              {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
             </div>
 
             <div className="relative">
@@ -91,8 +133,9 @@ export default function RegisterPage() {
                 required 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
               />
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
 
             <div className="relative">
@@ -103,8 +146,9 @@ export default function RegisterPage() {
                 required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
               />
+              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
             </div>
 
             <div className="relative">
@@ -113,22 +157,24 @@ export default function RegisterPage() {
                 type="password" 
                 placeholder="Confirme sua senha" 
                 required 
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                value={password2}
+                onChange={(e) => setPassword2(e.target.value)}
+                className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.password2 ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
               />
+              {errors.password2 && <p className="text-red-500 text-sm mt-1">{errors.password2}</p>}
             </div>
 
             <button 
               type="submit" 
+              disabled={isPending}
               className="w-full bg-gradient-to-r from-blue-700 to-emerald-600 text-white py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 font-semibold cursor-pointer"
             >
-              Criar Conta
+              {isPending ? 'Cadastrando...' : 'Criar Conta'}
             </button>
           </form>
 
           <div className="text-center mt-6 text-sm">
-            Já tem uma conta? {' '}
+            Já tem uma conta?{' '}
             <Link 
               href="/login" 
               className="text-blue-600 hover:underline font-semibold"
