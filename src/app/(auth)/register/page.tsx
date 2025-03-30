@@ -56,7 +56,7 @@ export default function RegisterPage() {
 
         if (response.ok) {
           // Redirecionar para a página protegida após login bem-sucedido
-          router.push('/login');
+          router.push('/profile');
         } else {
           // Tratar erros retornados pela API
           const data = await response.json();

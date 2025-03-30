@@ -26,6 +26,9 @@ const RegisterSchema = z
 
 
 
+
+
+
 const LoginSchema = z.object({
   username: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
   password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),

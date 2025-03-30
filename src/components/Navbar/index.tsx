@@ -1,15 +1,60 @@
-'use client'
+'use client';
+
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { GraduationCap, Home, Users, MessageCircle, User, Search, Menu, X } from 'lucide-react';
+import {
+  GraduationCap,
+  Home,
+  Users,
+  MessageCircle,
+  User,
+  Search,
+  Menu,
+  X,
+} from 'lucide-react';
+import ProfileMenuModal from '../ProfileMenuModal';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Estado para o menu mobile
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para o modal de perfil
+  const router = useRouter();
+
+  const handleProfileClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleEditProfile = () => {
+    setIsModalOpen(false);
+    router.push('/profile');
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response =  await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        router.push('/login');
+      } else {
+        console.error('Erro ao fazer logout:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+
+    setIsModalOpen(false);
+    
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white/95 shadow-sm z-50 backdrop-blur-md">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Desktop Nav */}
+        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
@@ -36,11 +81,20 @@ export default function Navbar() {
             <NavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
             <NavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
             <NavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
-            <NavLink href="/profile" icon={<User className="h-5 w-5" />} text="Perfil" />
+            {/* Para o perfil, usamos botão que abre o modal */}
+            <button
+              onClick={handleProfileClick}
+              className="group flex items-center gap-2 text-gray-600 hover:text-blue-800 transition-colors focus:outline-none cursor-pointer"
+            >
+              <User className="h-5 w-5" />
+              <span className="text-sm font-medium relative after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-blue-800 after:transition-all group-hover:after:w-full">
+                Perfil
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* Mobile Nav */}
+        {/* Mobile Navigation */}
         <div className="md:hidden flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
             <GraduationCap className="h-8 w-8 text-emerald-600" />
@@ -69,29 +123,45 @@ export default function Navbar() {
                   className="w-full bg-transparent outline-none text-sm placeholder:text-gray-500"
                 />
               </div>
-
               <div className="space-y-4">
                 <MobileNavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
                 <MobileNavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
                 <MobileNavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
-                <MobileNavLink href="/profile" icon={<User className="h-5 w-5" />} text="Perfil" />
+                {/* Link de Perfil no Mobile: abre o modal */}
+                <button
+                  onClick={handleProfileClick}
+                  className="flex items-center gap-3 p-2 text-gray-600 hover:bg-blue-50 rounded-lg w-full text-left"
+                >
+                  <User className="h-5 w-5" />
+                  <span className="text-base font-medium">Perfil</span>
+                </button>
               </div>
             </div>
           </div>
         )}
       </nav>
 
+      {/* Modal do Perfil */}
+      {isModalOpen && (
+        <ProfileMenuModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onEditProfile={handleEditProfile}
+          onLogout={handleLogout}
+        />
+      )}
+
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
-        
         .font-montserrat {
           font-family: 'Montserrat', sans-serif;
         }
       `}</style>
     </header>
   );
-};
+}
 
+// Componente para o link da navegação (Desktop)
 const NavLink = ({ href, icon, text }: { href: string; icon: React.ReactNode; text: string }) => (
   <Link href={href} className="group flex items-center gap-2 text-gray-600 hover:text-blue-800 transition-colors">
     {icon}
@@ -101,10 +171,10 @@ const NavLink = ({ href, icon, text }: { href: string; icon: React.ReactNode; te
   </Link>
 );
 
+// Componente para o link de navegação (Mobile)
 const MobileNavLink = ({ href, icon, text }: { href: string; icon: React.ReactNode; text: string }) => (
   <Link href={href} className="flex items-center gap-3 p-2 text-gray-600 hover:bg-blue-50 rounded-lg">
     {icon}
     <span className="text-base font-medium">{text}</span>
   </Link>
 );
-

@@ -1,4 +1,5 @@
 import "./globals.css"
+import { EditingProvider } from "@/contexts/EditingContext"
 
 export default function RootLayout({
     children,
@@ -8,7 +9,9 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body className="antialiased">
-          {children}
+          <EditingProvider>
+            {children}
+          </EditingProvider>
         </body>
       </html>
     );
