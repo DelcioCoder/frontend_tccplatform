@@ -1,16 +1,21 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { cookies } from "next/headers";
 
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const isAuthenticated = !!cookieStore.get('access')?.value;
+
+
   return (
     <>
-      <Navbar />
+      {isAuthenticated && <Navbar />}
       {children}
-      <Footer />
+      {isAuthenticated && <Footer />}
     </>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -12,13 +12,23 @@ import {
   Search,
   Menu,
   X,
+  LayoutDashboard
 } from 'lucide-react';
 import ProfileMenuModal from '../ProfileMenuModal';
-
+import { getAuthenticatedUser } from '@/lib/api/auth';
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false); // Estado para o menu mobile
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para o modal de perfil
+  const [userType, setUserType] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserType = async () => {
+      const user = await getAuthenticatedUser();
+      setUserType(user?.user_type);
+    };
+    fetchUserType();
+  }, []);
 
   const handleProfileClick = () => {
     setIsModalOpen(true);
@@ -79,7 +89,12 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="flex items-center gap-6">
             <NavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
-            <NavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
+            {userType === "student" && (
+              <NavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
+            )}
+            {userType === "advisor" && (
+              <NavLink href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+            )}
             <NavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
             {/* Para o perfil, usamos botão que abre o modal */}
             <button
@@ -125,7 +140,12 @@ export default function Navbar() {
               </div>
               <div className="space-y-4">
                 <MobileNavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
-                <MobileNavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
+                {userType === "student" && (
+                  <MobileNavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
+                )}
+                {userType === "advisor" && (
+                  <MobileNavLink href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+                )}
                 <MobileNavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
                 {/* Link de Perfil no Mobile: abre o modal */}
                 <button

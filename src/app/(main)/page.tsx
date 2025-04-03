@@ -1,10 +1,23 @@
 import Hero from "@/components/Hero"
 import FeaturedMentors from "@/components/FeaturedMentors"
-export default function Home() {
+import UnauthenticatedHome from "@/components/UnauthenticatedHome"
+import { cookies } from "next/headers"
+
+export default async function Home() {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('access')?.value;
+    const isAuthenticated = !!accessToken;
+  
     return (
-      <div>
-        <Hero />
-        <FeaturedMentors />
-      </div>
+        <div>
+            {isAuthenticated ? (
+                <>
+                    <Hero />
+                    <FeaturedMentors />
+                </>
+            ) : (
+                <UnauthenticatedHome />
+            )}
+        </div>
     )
 }
