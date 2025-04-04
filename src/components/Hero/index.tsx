@@ -1,29 +1,41 @@
-'use client'; 
-
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function Hero() {
-  const textVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 30 
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.8,
-        ease: "easeOut"
+  const [userType, setUserType] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchUserInfo() {
+      try {
+        const response = await fetch('/api/users/me');
+        if (response.ok) {
+          const data = await response.json();
+          setUserType(data.user_type);
+        } else {
+          setUserType(null);
+        }
+      } catch (error) {
+        console.error('Erro ao obter informações do usuário:', error);
+        setUserType(null);
+      } finally {
+        setLoading(false);
       }
     }
+    fetchUserInfo();
+  }, []);
+
+  const textVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
   };
 
   return (
     <section className="min-h-screen flex items-center bg-gradient-to-br from-blue-700 to-emerald-600 text-white relative overflow-hidden">
       <div className="max-w-4xl mx-auto text-center px-4 relative z-10">
-        <motion.h1 
+        <motion.h1
           initial="hidden"
           animate="visible"
           variants={textVariants}
@@ -42,27 +54,31 @@ export default function Hero() {
           Conecte-se com os melhores orientadores de Angola e eleve sua pesquisa acadêmica a novos patamares.
         </motion.p>
         
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ 
-            opacity: 1, 
-            y: 0,
-            transition: { 
-              duration: 0.8,
-              delay: 0.8,
-              ease: "easeOut"
-            }
-          }}
-        >
-          <Link 
-            href="/connect"
-            className="inline-block px-8 py-4 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-2xl"
+        {loading ? (
+          <div className="flex justify-center items-center">
+            {/* Spinner usando Tailwind CSS */}
+            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{
+              opacity: userType === 'student' ? 1 : 0,
+              y: userType === 'student' ? 0 : 30,
+              transition: { duration: 0.8, delay: userType === 'student' ? 0.3 : 0, ease: 'easeOut' }
+            }}
           >
-            Encontre seu Orientador
-          </Link>
-        </motion.div>
+            {userType === 'student' && (
+              <Link
+                href="/connect"
+                className="inline-block px-8 py-4 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-2xl"
+              >
+                Encontre seu Orientador
+              </Link>
+            )}
+          </motion.div>
+        )}
       </div>
     </section>
   );
-};
-
+}
