@@ -1,7 +1,9 @@
 "use server";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
-export async function getAuthenticatedUser() {
+// Aplicar cache na função para evitar multiplas chamadas desnecessárias
+export const getAuthenticatedUser = cache(async () => {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('access')?.value;
 
@@ -13,6 +15,10 @@ export async function getAuthenticatedUser() {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`
+            },
+            // Definindo opções de cache para o fetch
+            next: {
+                revalidate: 60 // Revalidar a cada 60 segundos
             }
         });
 
@@ -27,4 +33,4 @@ export async function getAuthenticatedUser() {
         console.error('Erro ao obter usuário autenticado:', error);
         return null;
     }
-}
+});
