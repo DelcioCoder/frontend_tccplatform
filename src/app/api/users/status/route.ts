@@ -9,8 +9,9 @@ export async function GET() {
     if (!accessToken) {
       return NextResponse.json({ error: 'Token de acesso não encontrado' }, { status: 401 });
     }
-
-    const response = await fetch('http://localhost:8000/api/users/status/', {
+     
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const response = await fetch(`${apiUrl}/users/status/`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

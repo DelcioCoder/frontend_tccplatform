@@ -10,7 +10,8 @@ export async function GET() {
     }
     
     try {
-        const response = await fetch('http://localhost:8000/api/users/me', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const response = await fetch(`${apiUrl}/users/me`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }

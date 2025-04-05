@@ -17,7 +17,7 @@ export async function POST(
 
     const { status, response_message } = await request.json();
 
-    const apiUrl = `http://localhost:8000/api/connections/response/${id}/`;
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/connections/response/${id}/`;
 
     try {
 

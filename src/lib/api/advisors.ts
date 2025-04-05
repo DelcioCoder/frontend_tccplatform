@@ -5,7 +5,8 @@ import { cookies } from "next/headers";
 export async function getAdvisors(): Promise<Advisor[]> {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('access')?.value;
-    const response = await fetch('http://localhost:8000/api/profiles/advisors', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const response = await fetch(`${apiUrl}/profiles/advisors`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

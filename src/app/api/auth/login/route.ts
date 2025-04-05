@@ -6,7 +6,8 @@ export async function POST(request: Request) {
 
   try {
     // Envia as credenciais ao endpoint do Django
-    const response = await fetch('http://localhost:8000/api/auth_user/token/', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const response = await fetch(`${apiUrl}/auth_user/token/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

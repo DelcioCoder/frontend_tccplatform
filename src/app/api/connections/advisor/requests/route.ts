@@ -9,7 +9,9 @@ export async function GET() {
         return NextResponse.json({ error: 'Token não encontrado' }, { status: 401 });
     }
 
-    const response = await fetch('http://localhost:8000/api/connections/advisor/requests/', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    const response = await fetch(`${apiUrl}/connections/advisor/requests/`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`

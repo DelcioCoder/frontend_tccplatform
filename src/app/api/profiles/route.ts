@@ -9,8 +9,9 @@ export async function GET() {
         if (!token) {
             return NextResponse.json({ error: 'Token não encontrado' }, { status: 401 });
         }
-
-        const response = await fetch('http://localhost:8000/api/profiles/', {
+         
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const response = await fetch(`${apiUrl}/profiles/`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -38,7 +39,8 @@ export async function PUT(request: Request) {
         }
 
         const body = await request.json();
-        const response = await fetch('http://localhost:8000/api/profiles/', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const response = await fetch(`${apiUrl}/profiles/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

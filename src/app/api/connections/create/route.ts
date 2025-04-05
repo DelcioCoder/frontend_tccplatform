@@ -13,7 +13,8 @@ export async function POST(request: Request) {
     const { advisor, message } = await request.json();
 
     try {
-        const response = await fetch('http://localhost:8000/api/connections/create/', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const response = await fetch(`${apiUrl}/connections/create/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
