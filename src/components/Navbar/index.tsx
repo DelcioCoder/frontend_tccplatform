@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -15,20 +15,13 @@ import {
   LayoutDashboard
 } from 'lucide-react';
 import ProfileMenuModal from '../ProfileMenuModal';
-import { getAuthenticatedUser } from '@/lib/api/auth';
-export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false); // Estado para o menu mobile
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para o modal de perfil
-  const [userType, setUserType] = useState<string | null>(null);
-  const router = useRouter();
+import { useUserType } from '@/hooks/useUserType'; // Vamos criar este hook
 
-  useEffect(() => {
-    const fetchUserType = async () => {
-      const user = await getAuthenticatedUser();
-      setUserType(user?.user_type);
-    };
-    fetchUserType();
-  }, []);
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { userType, isLoading } = useUserType(); // Hook personalizado para gerenciar o tipo de usuário
+  const router = useRouter();
 
   const handleProfileClick = () => {
     setIsModalOpen(true);
@@ -45,10 +38,12 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const response =  await fetch('/api/auth/logout', {
+      const response = await fetch('/api/auth/logout', {
         method: 'POST',
       });
       if (response.ok) {
+        // Limpar o tipo de usuário do localStorage ao fazer logout
+        localStorage.removeItem('userType');
         router.push('/login');
       } else {
         console.error('Erro ao fazer logout:', response.statusText);
@@ -56,9 +51,50 @@ export default function Navbar() {
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
     }
-
     setIsModalOpen(false);
+  };
+
+  // Renderização condicional dos links baseada no tipo de usuário
+  const renderDashboardLink = () => {
+    if (isLoading) {
+      // Retornamos um placeholder para evitar layout shift
+      return <div className="h-5 w-24 animate-pulse bg-gray-200 rounded-full"></div>;
+    }
     
+    if (userType === "student") {
+      return (
+        <NavLink 
+          href="/student/dashboard" 
+          icon={<LayoutDashboard className="h-5 w-5" />} 
+          text="Dashboard" 
+        />
+      );
+    }
+    
+    if (userType === "advisor") {
+      return (
+        <NavLink 
+          href="/advisor/dashboard" 
+          icon={<LayoutDashboard className="h-5 w-5" />} 
+          text="Dashboard" 
+        />
+      );
+    }
+    
+    return null;
+  };
+
+  const renderConnectLink = () => {
+    if (!isLoading && userType === "student") {
+      return (
+        <NavLink 
+          href="/connect" 
+          icon={<Users className="h-5 w-5" />} 
+          text="Conectar" 
+        />
+      );
+    }
+    return null;
   };
 
   return (
@@ -89,15 +125,8 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="flex items-center gap-6">
             <NavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
-            {userType === "student" && (
-              <NavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
-            )}
-            {userType === "student" && (
-              <NavLink href="student/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
-            )}
-            {userType === "advisor" && (
-              <NavLink href="advisor/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
-            )}
+            {renderConnectLink()}
+            {renderDashboardLink()}
             <NavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
             {/* Para o perfil, usamos botão que abre o modal */}
             <button
@@ -143,14 +172,14 @@ export default function Navbar() {
               </div>
               <div className="space-y-4">
                 <MobileNavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
-                {userType === "student" && (
+                {!isLoading && userType === "student" && (
                   <MobileNavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
                 )}
-                {userType === "student" && (
-                  <MobileNavLink href="student/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+                {!isLoading && userType === "student" && (
+                  <MobileNavLink href="/student/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
                 )}  
-                {userType === "advisor" && (
-                  <MobileNavLink href="advisor/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+                {!isLoading && userType === "advisor" && (
+                  <MobileNavLink href="/advisor/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
                 )}
                 <MobileNavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
                 {/* Link de Perfil no Mobile: abre o modal */}

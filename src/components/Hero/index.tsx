@@ -1,31 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import { useUserType } from '@/hooks/useUserType';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function Hero() {
-  const [userType, setUserType] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchUserInfo() {
-      try {
-        const response = await fetch('/api/users/me');
-        if (response.ok) {
-          const data = await response.json();
-          setUserType(data.user_type);
-        } else {
-          setUserType(null);
-        }
-      } catch (error) {
-        console.error('Erro ao obter informações do usuário:', error);
-        setUserType(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchUserInfo();
-  }, []);
+  const { userType, isLoading } = useUserType();
 
   const textVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -54,7 +34,7 @@ export default function Hero() {
           Conecte-se com os melhores orientadores de Angola e eleve sua pesquisa acadêmica a novos patamares.
         </motion.p>
         
-        {loading ? (
+        {isLoading ? (
           <div className="flex justify-center items-center">
             {/* Spinner usando Tailwind CSS */}
             <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
