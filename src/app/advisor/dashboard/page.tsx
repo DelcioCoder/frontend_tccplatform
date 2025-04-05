@@ -14,7 +14,7 @@ import {
   SortDesc,
 } from "lucide-react";
 
-export default function Dashboard() {
+export default function AdvisorDashboard() {
   const [requests, setRequests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("all");

@@ -92,8 +92,11 @@ export default function Navbar() {
             {userType === "student" && (
               <NavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
             )}
+            {userType === "student" && (
+              <NavLink href="student/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+            )}
             {userType === "advisor" && (
-              <NavLink href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+              <NavLink href="advisor/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
             )}
             <NavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
             {/* Para o perfil, usamos botão que abre o modal */}
@@ -143,8 +146,11 @@ export default function Navbar() {
                 {userType === "student" && (
                   <MobileNavLink href="/connect" icon={<Users className="h-5 w-5" />} text="Conectar" />
                 )}
+                {userType === "student" && (
+                  <MobileNavLink href="student/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+                )}  
                 {userType === "advisor" && (
-                  <MobileNavLink href="/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
+                  <MobileNavLink href="advisor/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
                 )}
                 <MobileNavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
                 {/* Link de Perfil no Mobile: abre o modal */}
