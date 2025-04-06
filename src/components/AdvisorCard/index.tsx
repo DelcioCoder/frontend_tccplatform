@@ -1,4 +1,6 @@
 import { Advisor } from "@/types/advisor";
+import { User, UserPlus, BadgeCheck } from 'lucide-react'; 
+import Goback from "../GoBack";
 
 interface AdvisorCardProps {
   advisor: Advisor;
@@ -7,37 +9,97 @@ interface AdvisorCardProps {
 
 export default function AdvisorCard({ advisor, onConnect }: AdvisorCardProps) {
   return (
-    <article 
-      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 hover:border-blue-300 p-6 flex flex-col justify-between"
-      aria-label={`Orientador: ${advisor.username}`}
-    >
-      <div>
-        {/* Avatar com gradiente */}
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-md">
-          {advisor.username.charAt(0).toUpperCase()}
-        </div>
-
-        <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-gray-800">{advisor.username}</h2>
-          <span className="inline-block bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-            {advisor.specialization}
-          </span>
-          <p className="text-gray-600 text-base leading-relaxed line-clamp-3">
-            {advisor.biography}
-          </p>
+    <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg group h-full flex flex-col">
+      {/* Header com imagem de capa e foto de perfil */}
+      <div className="relative h-24 bg-gradient-to-r from-blue-50 to-indigo-50">
+        {advisor.coverImage && (
+          <img
+            src={advisor.coverImage}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute -bottom-10 left-6">
+          <div className="relative w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden bg-white">
+            {advisor.profilePicture ? (
+              <img
+                src={advisor.profilePicture}
+                alt={`${advisor.username}`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <User className="w-10 h-10 text-gray-400" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      
-      <button
-        onClick={() => onConnect(advisor)}
-        aria-label={`Solicitar orientação de ${advisor.username}`}
-        className="mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
-        </svg>
-        Solicitar Orientação
-      </button>
-    </article>
+
+      {/* Conteúdo principal */}
+      <div className="p-6 pt-12 grid grid-cols-1 gap-4 flex-grow">
+        <div>
+          <div className="flex items-center space-x-2">
+            <h2 className="text-lg font-semibold text-gray-800">{advisor.username}</h2>
+            {advisor.isVerified && (
+              <BadgeCheck className="w-5 h-5 text-blue-500" />
+            )}
+          </div>
+          
+          {advisor.specialization && (
+            <p className="text-sm text-gray-600 font-medium mt-1">{advisor.specialization}</p>
+          )}
+        </div>
+
+        {/* Estatísticas simplificadas - sem avaliação */}
+        <div className="flex justify-around py-2 border-t border-b border-gray-100 text-center">
+          <div className="px-2">
+            <p className="text-sm font-semibold text-gray-800">{advisor.clientsCount || 0}</p>
+            <p className="text-xs text-gray-500">Clientes</p>
+          </div>
+          <div className="px-2">
+            <p className="text-sm font-semibold text-gray-800">{advisor.experienceYears || 0}</p>
+            <p className="text-xs text-gray-500">Anos</p>
+          </div>
+        </div>
+
+        {/* Biografia */}
+        <div className="min-h-20 overflow-hidden text-ellipsis flex-grow">
+          {advisor.biography ? (
+            <p className="text-gray-700 text-sm leading-relaxed">{advisor.biography}</p>
+          ) : (
+            <p className="text-gray-400 italic text-sm">Sem informações adicionais</p>
+          )}
+        </div>
+
+        {/* Áreas de especialidade */}
+        {advisor.expertiseAreas && advisor.expertiseAreas.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {advisor.expertiseAreas.slice(0, 3).map((area, index) => (
+              <span key={index} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+                {area}
+              </span>
+            ))}
+            {advisor.expertiseAreas.length > 3 && (
+              <span className="text-xs bg-gray-50 text-gray-600 px-2 py-1 rounded-full">
+                +{advisor.expertiseAreas.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Botão de conexão - sempre no final do card */}
+      <div className="p-6 pt-0">
+        <button
+          onClick={() => onConnect(advisor)}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors duration-300 flex items-center justify-center space-x-2"
+          aria-label={`Conectar com ${advisor.username}`}
+        >
+          <UserPlus className="w-5 h-5" />
+          <span>Conectar</span>
+        </button>
+      </div>
+    </div>
   );
 }
