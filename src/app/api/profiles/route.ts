@@ -13,7 +13,8 @@ export async function GET() {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const response = await fetch(`${apiUrl}/profiles/`, {
             headers: {
-                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
         });
 
@@ -44,7 +45,7 @@ export async function PUT(request: Request) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(body),
         });
