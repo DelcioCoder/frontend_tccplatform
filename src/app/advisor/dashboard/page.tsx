@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Goback from "@/components/GoBack";
 import {
   Bell,
   CheckCircle,
@@ -250,13 +251,13 @@ export default function AdvisorDashboard() {
                         <>
                           <button
                             onClick={() => handleAccept(req.id)}
-                            className="flex items-center justify-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="flex items-center justify-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                           >
                             <CheckCircle size={16} className="mr-2" /> Aceitar
                           </button>
                           <button
                             onClick={() => handleReject(req.id)}
-                            className="flex items-center justify-center bg-white border border-red-500 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
+                            className="flex items-center justify-center bg-white border border-red-500 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
                           >
                             <XCircle size={16} className="mr-2" /> Rejeitar
                           </button>
@@ -274,6 +275,7 @@ export default function AdvisorDashboard() {
                   </div>
                 </motion.article>
               ))}
+              <Goback />
             </motion.div>
           )}
         </section>

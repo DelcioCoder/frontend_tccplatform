@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Goback from "@/components/GoBack";
 
 import {
   Bell,
@@ -307,7 +308,7 @@ export default function StudentDashboard() {
                       {req.status === "Accepted" && (
                         <motion.button
                           onClick={() => router.push(`/messages?request=${req.id}`)}
-                          className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                          className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
@@ -318,6 +319,7 @@ export default function StudentDashboard() {
                   </div>
                 </motion.article>
               ))}
+              <Goback />
             </motion.div>
           )}
         </section>
