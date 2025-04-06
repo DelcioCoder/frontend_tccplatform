@@ -15,10 +15,10 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEditing } from '@/contexts/EditingContext';
-
+import { useUserType } from '@/hooks/useUserType';
 
 interface ProfileFormProps {
-  userType: string;
+  userType: 'student' | 'advisor' | string | null;
   profile: any;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
@@ -148,6 +148,7 @@ function AnimatedFormFields({ userType, profile, handleChange }: ProfileFormProp
 export default function ProfileForm() {
   const router = useRouter();
   const { isEditing, setIsEditing } = useEditing();
+  const { userType: userTypeFromHook, isLoading: userTypeLoading } = useUserType();
 
   // Estado para armazenar os campos do perfil
   const [profile, setProfile] = useState({
@@ -159,7 +160,7 @@ export default function ProfileForm() {
     experience: '',
     biography: '',
   });
-  const [userType, setUserType] = useState<'student' | 'advisor'>('student');
+
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error'>('success');
@@ -176,14 +177,11 @@ export default function ProfileForm() {
     async function checkAccountActivation() {
       try {
         const response = await fetch('/api/users/status');
-
-        // Se o status for 401, extrair o erro para verificar se é "user_inactive"
         if (response.status === 401) {
           const errorData = await response.json();
           if (errorData.code === 'user_inactive') {
             setIsAccountActivated(false);
           } else {
-            // Outro erro 401, redireciona para o login
             router.push('/login');
             return;
           }
@@ -203,14 +201,14 @@ export default function ProfileForm() {
     checkAccountActivation();
   }, [router]);
 
-  // Buscar o perfil do usuário se a verificação de ativação estiver concluída e a conta estiver ativada
+  // Buscar o perfil do usuário se a conta estiver ativada e o tipo de usuário carregado
   useEffect(() => {
-    if (!checkingActivation && isAccountActivated) {
+    if (!checkingActivation && isAccountActivated && !userTypeLoading) {
       fetchProfile();
     } else if (!checkingActivation) {
       setLoading(false);
     }
-  }, [checkingActivation, isAccountActivated]);
+  }, [checkingActivation, isAccountActivated, userTypeLoading]);
 
   async function fetchProfile() {
     try {
@@ -226,14 +224,7 @@ export default function ProfileForm() {
           experience: data.experience || '',
           biography: data.biography || '',
         });
-        // Se houver dados do perfil, significa que estamos editando o perfil
-        setIsEditing(true)
-        // Determinar o tipo de usuário baseado em campos específicos
-        if (data.specialization || data.experience || data.biography) {
-          setUserType('advisor');
-        } else {
-          setUserType('student');
-        }
+        setIsEditing(true);
       } else {
         console.error('Erro ao buscar perfil:', await response.json());
       }
@@ -248,7 +239,6 @@ export default function ProfileForm() {
   const handleResendActivationEmail = async () => {
     setResendingEmail(true);
     setEmailSent(false);
-
     try {
       const response = await fetch('/api/users/resend-activation/', {
         method: 'POST',
@@ -263,7 +253,7 @@ export default function ProfileForm() {
         try {
           const errorData = await response.json();
           errorMessage = errorData.detail || errorMessage;
-        } catch (e) { }
+        } catch (e) {}
         setMessage(errorMessage);
         setMessageType('error');
       }
@@ -287,24 +277,33 @@ export default function ProfileForm() {
   // Função para enviar a atualização do perfil para a API
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Verifica se a conta está ativada antes de enviar
     if (!isAccountActivated) {
       setMessage('Sua conta precisa ser ativada antes de criar um perfil.');
       setMessageType('error');
       return;
     }
 
+    // Filtrar os campos com base no tipo de usuário do hook
+    const profileData = userTypeFromHook === 'student' ? {
+      institution: profile.institution,
+      course: profile.course,
+      graduation_year: profile.graduation_year,
+      tcc_interest: profile.tcc_interest,
+    } : {
+      specialization: profile.specialization,
+      experience: profile.experience,
+      biography: profile.biography,
+    };
+
     try {
       const response = await fetch('/api/profiles', {
         method: 'PUT',
-        body: JSON.stringify(profile),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileData),
       });
-
       if (response.ok) {
         setMessage('Perfil criado com sucesso!');
         setMessageType('success');
-        // Redirecionar para a página principal após um curto intervalo
         setTimeout(() => {
           router.push('/');
         }, 1500);
@@ -313,7 +312,7 @@ export default function ProfileForm() {
         try {
           const errorData = await response.json();
           errorMessage = errorData.detail || errorMessage;
-        } catch (e) { }
+        } catch (e) {}
         setMessage(errorMessage);
         setMessageType('error');
       }
@@ -324,15 +323,16 @@ export default function ProfileForm() {
     }
   };
 
-  // Enquanto carrega a verificação de ativação ou os dados do perfil, exibe "Carregando..."
-  if (loading || checkingActivation)
+  // Exibe "Carregando..." enquanto verifica ativação, perfil ou tipo de usuário
+  if (loading || checkingActivation || userTypeLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-700 to-emerald-600 flex items-center justify-center">
         <p className="text-white text-xl">Carregando...</p>
       </div>
     );
+  }
 
-  // Se a conta não estiver ativada, exibe a mensagem e opções para reenviar o email
+  // Se a conta não estiver ativada, exibe mensagem de ativação
   if (!isAccountActivated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-700 to-emerald-600 flex items-center justify-center p-4">
@@ -346,7 +346,6 @@ export default function ProfileForm() {
             <Mail className="text-blue-700 mr-2" size={32} />
             <h1 className="text-3xl font-bold text-gray-800">Ativação Pendente</h1>
           </div>
-
           {username && (
             <div className="mb-4 text-center">
               <p className="text-gray-700 font-medium">
@@ -354,7 +353,6 @@ export default function ProfileForm() {
               </p>
             </div>
           )}
-
           {message && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -362,12 +360,11 @@ export default function ProfileForm() {
               className={`mb-6 p-3 rounded-lg text-center ${messageType === 'success'
                 ? 'bg-green-100 text-green-700'
                 : 'bg-red-100 text-red-700'
-                }`}
+              }`}
             >
               {message}
             </motion.div>
           )}
-
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -386,11 +383,9 @@ export default function ProfileForm() {
               </div>
             </div>
           </div>
-
           <p className="text-gray-600 mb-6 text-center">
             Não recebeu o e-mail de ativação? Clique no botão abaixo para reenviar o link.
           </p>
-
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -410,13 +405,11 @@ export default function ProfileForm() {
               </>
             )}
           </motion.button>
-
           {emailSent && (
             <div className="mt-4 text-center text-sm text-gray-600">
               Após ativar sua conta, recarregue esta página para continuar.
             </div>
           )}
-
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -430,7 +423,7 @@ export default function ProfileForm() {
     );
   }
 
-  // Se a conta estiver ativada, exibe o formulário de criação/atualização do perfil
+  // Exibe o formulário de criação/atualização do perfil
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-700 to-emerald-600 flex items-center justify-center p-4">
       <motion.div
@@ -445,7 +438,6 @@ export default function ProfileForm() {
             {isEditing ? 'Editar perfil' : 'Criar perfil'}
           </h1>
         </div>
-
         {username && (
           <div className="mb-4 text-center">
             <p className="text-gray-700 font-medium">
@@ -453,7 +445,6 @@ export default function ProfileForm() {
             </p>
           </div>
         )}
-
         {message && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -461,42 +452,13 @@ export default function ProfileForm() {
             className={`mb-4 p-3 rounded-lg text-center ${messageType === 'success'
               ? 'bg-green-100 text-green-700'
               : 'bg-red-100 text-red-700'
-              }`}
+            }`}
           >
-            {isEditing ? 'Perfil atualizado com sucesso!' : 'Perfil criado com sucesso!'}
+            {message}
           </motion.div>
         )}
-
-        <div className="mb-6">
-          <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
-            <button
-              type="button"
-              onClick={() => setUserType('student')}
-              className={`flex items-center justify-center rounded-md py-2 px-4 flex-1 text-sm font-medium transition-colors ${userType === 'student'
-                ? 'bg-white text-blue-700 shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-                }`}
-            >
-              <School className="mr-2" size={18} />
-              Estudante
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserType('advisor')}
-              className={`flex items-center justify-center rounded-md py-2 px-4 flex-1 text-sm font-medium transition-colors ${userType === 'advisor'
-                ? 'bg-white text-blue-700 shadow-sm'
-                : 'text-gray-600 hover:text-gray-800'
-                }`}
-            >
-              <BookOpen className="mr-2" size={18} />
-              Orientador
-            </button>
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
-          <AnimatedFormFields userType={userType} profile={profile} handleChange={handleChange} />
-
+          <AnimatedFormFields userType={userTypeFromHook} profile={profile} handleChange={handleChange} />
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
