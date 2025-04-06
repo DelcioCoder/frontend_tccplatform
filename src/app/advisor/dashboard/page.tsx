@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import Goback from "@/components/GoBack";
+import Spinner from "@/components/Spinner";
 import {
   Bell,
   CheckCircle,
@@ -255,7 +256,7 @@ export default function AdvisorDashboard() {
           <h2 id="requests-heading" className="sr-only">Solicitações de orientação</h2>
           {isLoading && requests.length === 0 ? (
             <div className="flex justify-center py-12">
-              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />
+              <Spinner />
             </div>
           ) : sortedRequests.length === 0 && !hasError && nextUrl === null ? (
             <motion.div
