@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: Request) {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('access')?.value;
 
@@ -10,11 +10,19 @@ export async function GET() {
     }
     
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const response = await fetch(`${apiUrl}/connections/student/requests/`, {
+    if (!apiUrl) {
+        return NextResponse.json({ error: "URL da API não configurada" }, { status: 500 });
+    }
+
+    const url = new URL(request.url);
+    const page = url.searchParams.get("page") || "1";
+
+    const response = await fetch(`${apiUrl}/connections/student/requests/?page=${page}`, {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
-        }
+        },
+        cache: "no-store",
     });
 
     if (!response.ok) {
