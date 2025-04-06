@@ -1,8 +1,9 @@
 'use server'
 import { Student } from "@/types/student";
+import { PaginatedResponse } from "@/types/api";
 import { cookies } from "next/headers";
 
-export async function getStudents(): Promise<Student[]> {
+export async function getStudents(): Promise<PaginatedResponse<Student>> {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get('access')?.value;
     
