@@ -1,5 +1,4 @@
 'use client';
-import React, { useEffect, useState } from 'react';
 import { useUserType } from '@/hooks/useUserType';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -12,9 +11,35 @@ export default function Hero() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
   };
 
+  // Loading text animation variants
+  const loadingTextVariants = {
+    animate: {
+      opacity: [0.3, 1, 0.3],
+      transition: {
+        duration: 1.5,
+        repeat: Infinity,
+        ease: 'easeInOut'
+      }
+    }
+  };
+
+  // Loading line animation variants
+  const loadingLineVariants = {
+    initial: { width: 0, left: 0 },
+    animate: {
+      width: ["0%", "100%", "0%"],
+      left: ["0%", "0%", "100%"],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
-    <section className="min-h-screen flex items-center bg-gradient-to-br from-blue-700 to-emerald-600 text-white relative overflow-hidden">
-      <div className="max-w-4xl mx-auto text-center px-4 relative z-10">
+    <section className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-700 to-emerald-600 text-white relative overflow-hidden">
+      <div className="max-w-4xl w-full mx-auto text-center px-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <motion.h1
           initial="hidden"
           animate="visible"
@@ -35,9 +60,24 @@ export default function Hero() {
         </motion.p>
         
         {isLoading ? (
-          <div className="flex justify-center items-center">
-            {/* Spinner usando Tailwind CSS */}
-            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          <div className="flex flex-col justify-center items-center">
+            <motion.div
+              className="text-white text-xl font-semibold mb-2"
+              animate="animate"
+              variants={loadingTextVariants}
+            >
+              <span className="bg-gradient-to-r from-blue-300 to-emerald-300 text-transparent text-3xl bg-clip-text font-bold">TCC Connect</span>
+            </motion.div>
+            
+            {/* Animated loading line */}
+            <div className="w-48 h-1 bg-white bg-opacity-20 relative overflow-hidden rounded-full">
+              <motion.div
+                className="h-full bg-white absolute top-0 rounded-full"
+                initial="initial"
+                animate="animate"
+                variants={loadingLineVariants}
+              />
+            </div>
           </div>
         ) : (
           <motion.div
@@ -47,6 +87,7 @@ export default function Hero() {
               y: userType === 'student' ? 0 : 30,
               transition: { duration: 0.8, delay: userType === 'student' ? 0.3 : 0, ease: 'easeOut' }
             }}
+            className="flex justify-center"
           >
             {userType === 'student' && (
               <Link
