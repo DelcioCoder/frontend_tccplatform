@@ -1,9 +1,8 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Goback from "@/components/GoBack";
-
 import {
   Bell,
   User,
@@ -19,45 +18,98 @@ import {
 
 export default function StudentDashboard() {
   const [requests, setRequests] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [nextUrl, setNextUrl] = useState<string | null>("initial"); // Para rastrear a próxima página
+  const [hasError, setHasError] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Função para buscar os pedidos enviados pelo estudante
-  useEffect(() => {
-    const fetchRequests = async () => {
+  // Função para carregar mais solicitações
+  const loadMoreRequests = useCallback(async () => {
+    if (isLoading || hasError || nextUrl === null) return;
+
+    try {
       setIsLoading(true);
-      try {
-        const response = await fetch('/api/connections/student/requests/');
-        if (response.ok) {
-          const data = await response.json();
-          setRequests(data.results);
-        } else {
-          console.error('Erro ao buscar solicitações', response.status);
+      const pageToFetch = nextUrl === "initial" ? "1" : nextUrl ? new URL(nextUrl).searchParams.get("page") || "1" : "1";
+      const response = await fetch(`/api/connections/student/requests?page=${pageToFetch}`);
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar solicitações: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (nextUrl === "initial") {
+        setRequests(data.results);
+      } else {
+        setRequests(prev => [...prev, ...data.results]);
+      }
+      setNextUrl(data.next);
+      setHasError(false);
+    } catch (error) {
+      console.error("Erro ao carregar solicitações:", error);
+      setHasError(true);
+      setNextUrl(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, nextUrl, hasError]);
+
+  // Carrega os dados iniciais
+  useEffect(() => {
+    if (nextUrl === "initial") {
+      loadMoreRequests();
+    }
+  }, [loadMoreRequests, nextUrl]);
+
+  // Configura o Intersection Observer para infinite scroll
+  useEffect(() => {
+    if (nextUrl === null || isLoading || hasError || nextUrl === "initial") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreRequests();
         }
-      } catch (error) {
-        console.error('Erro ao buscar solicitações', error);
-      } finally {
-        setIsLoading(false);
+      },
+      { rootMargin: "100px", threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
       }
     };
-    fetchRequests();
-  }, []);
+  }, [loadMoreRequests, isLoading, hasError, nextUrl]);
 
-  // Filtragem: pesquisa por orientador ou mensagem
+  // Função para tentar novamente em caso de erro
+  const handleRetry = () => {
+    setHasError(false);
+    if (requests.length === 0) {
+      setNextUrl("initial");
+    } else {
+      const nextPage = Math.ceil(requests.length / 5) + 1; // Assumindo 5 itens por página
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      setNextUrl(`${apiUrl}/api/connections/student/requests?page=${nextPage}`);
+    }
+  };
+
+  // Filtragem e ordenação
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
       !searchQuery ||
-      req.advisor_username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      req.advisor_username.toLowerCase  .includes(searchQuery.toLowerCase()) ||
       req.message.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter =
-      filter === "all" || req.status.toLowerCase() === filter.toLowerCase();
+    const matchesFilter = filter === "all" || req.status.toLowerCase() === filter.toLowerCase();
     return matchesSearch && matchesFilter;
   });
 
-  // Ordenação: por data de criação (ascendente ou descendente)
   const sortedRequests = [...filteredRequests].sort((a, b) =>
     sortOrder === "asc"
       ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -65,40 +117,8 @@ export default function StudentDashboard() {
   );
 
   // Variáveis para animação com Framer Motion
-  const container = { 
-    hidden: { opacity: 0 }, 
-    show: { 
-      opacity: 1, 
-      transition: { 
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      } 
-    } 
-  };
-  
-  const item = { 
-    hidden: { opacity: 0, y: 20 }, 
-    show: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100
-      }
-    } 
-  };
-
-  const cardHover = {
-    rest: { scale: 1 },
-    hover: { 
-      scale: 1.02,
-      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut"
-      }
-    }
-  };
+  const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
+  const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -107,23 +127,15 @@ export default function StudentDashboard() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-white">Meus Pedidos de Orientação</h1>
           <div className="flex items-center gap-4">
-            <motion.button 
-              className="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <button className="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white">
               <Bell size={20} className="text-white" aria-label="Notificações" />
               <span className="absolute top-0 right-0 h-4 w-4 bg-emerald-400 rounded-full text-xs text-white flex items-center justify-center">
                 {requests.length}
               </span>
-            </motion.button>
-            <motion.div 
-              className="h-8 w-8 rounded-full bg-emerald-500 text-white flex items-center justify-center"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            </button>
+            <div className="h-8 w-8 rounded-full bg-emerald-500 text-white flex items-center justify-center">
               <User size={16} aria-label="Perfil do usuário" />
-            </motion.div>
+            </div>
           </div>
         </div>
       </header>
@@ -143,8 +155,7 @@ export default function StudentDashboard() {
                 className="bg-white rounded-lg shadow-lg p-6 border border-gray-100"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * (index + 1), type: "spring", stiffness: 100 }}
-                whileHover={{ y: -5, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)" }}
+                transition={{ delay: 0.1 * (index + 1) }}
               >
                 <div className="flex items-center">
                   <div className={`p-3 rounded-full bg-${stat.color}-100 text-${stat.color}-700 mr-4`}>{stat.icon}</div>
@@ -159,106 +170,80 @@ export default function StudentDashboard() {
         </section>
 
         {/* Filtros e Pesquisa */}
-        <section className="flex flex-col sm:flex-row gap-4 justify-between mb-6">
-          <motion.div 
-            className="w-full sm:w-1/3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <label htmlFor="search" className="sr-only">Buscar orientador ou mensagem</label>
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                id="search"
-                placeholder="Buscar orientador ou mensagem"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+        <section aria-labelledby="filters-heading" className="mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            <div className="w-full sm:w-1/3">
+              <label htmlFor="search" className="sr-only">Buscar orientador ou mensagem</label>
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  id="search"
+                  placeholder="Buscar orientador ou mensagem"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
-          </motion.div>
-          <motion.div 
-            className="flex gap-4 w-full sm:w-auto"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="flex items-center gap-2">
-              <Filter size={16} className="text-blue-700" />
-              <select
-                id="filter"
-                className="w-full sm:w-auto bg-white px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              >
-                <option value="all">Todas</option>
-                <option value="pending">Pendentes</option>
-                <option value="accepted">Aceitas</option>
-                <option value="rejected">Rejeitadas</option>
-              </select>
+            <div className="flex gap-4 w-full sm:w-auto">
+              <div className="flex items-center gap-2">
+                <Filter size={16} className="text-blue-700" />
+                <select
+                  id="filter"
+                  className="w-full sm:w-auto bg-white px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                >
+                  <option value="all">Todas</option>
+                  <option value="pending">Pendentes</option>
+                  <option value="accepted">Aceitas</option>
+                  <option value="rejected">Rejeitadas</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                {sortOrder === "asc" ? <SortAsc size={16} className="text-blue-700" /> : <SortDesc size={16} className="text-blue-700" />}
+                <select
+                  id="sort"
+                  className="w-full sm:w-auto bg-white px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                >
+                  <option value="asc">Mais antigas</option>
+                  <option value="desc">Mais recentes</option>
+                </select>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              {sortOrder === "asc" ? (
-                <SortAsc size={16} className="text-blue-700" />
-              ) : (
-                <SortDesc size={16} className="text-blue-700" />
-              )}
-              <select
-                id="sort"
-                className="w-full sm:w-auto bg-white px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-              >
-                <option value="asc">Mais antigas</option>
-                <option value="desc">Mais recentes</option>
-              </select>
-            </div>
-          </motion.div>
+          </div>
         </section>
 
         {/* Lista de Solicitações */}
         <section aria-labelledby="requests-heading">
           <h2 id="requests-heading" className="sr-only">Pedidos de orientação</h2>
-          {isLoading ? (
+          {isLoading && requests.length === 0 ? (
             <div className="flex justify-center py-12">
-              <motion.div 
-                className="w-12 h-12 border-4 border-blue-200 border-t-blue-700 rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              />
+              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />
             </div>
-          ) : sortedRequests.length === 0 ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 100 }}
+          ) : sortedRequests.length === 0 && !hasError && nextUrl === null ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               className="bg-white rounded-lg shadow-lg p-12 text-center border border-gray-100"
             >
               <Bell size={48} className="text-gray-300 mb-4 mx-auto" />
               <h3 className="text-xl font-medium text-gray-700 mb-2">Nenhum pedido encontrado</h3>
               <p className="text-gray-500">
                 {searchQuery || filter !== "all"
-                  ? "Nenhum pedido corresponde aos filtros atuais."
-                  : "Você ainda não enviou nenhum pedido de orientação."}
+                  ? "Nenhum pedido corresponde aos filtros."
+                  : "Você não tem pedidos no momento."}
               </p>
             </motion.div>
           ) : (
-            <motion.div 
-              variants={container}
-              initial="hidden"
-              animate="show"
-              className="grid grid-cols-1 gap-6"
-            >
+            <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 gap-6">
               {sortedRequests.map((req) => (
                 <motion.article
                   key={req.id}
                   variants={item}
-                  whileHover="hover"
-                  initial="rest"
-                  animate="rest"
-                  variants={cardHover}
                   className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow border border-gray-100"
                 >
                   <div className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -270,7 +255,7 @@ export default function StudentDashboard() {
                         <div>
                           <h3 className="text-lg font-semibold text-gray-800">{req.advisor_username}</h3>
                           <time className="text-sm text-gray-500">
-                            {req.created_at ? new Date(req.created_at).toLocaleDateString('pt-BR') : 'Data não disponível'}
+                            {req.created_at ? new Date(req.created_at).toLocaleDateString("pt-BR") : "Data não disponível"}
                           </time>
                         </div>
                       </div>
@@ -306,19 +291,36 @@ export default function StudentDashboard() {
                           : "Pendente"}
                       </span>
                       {req.status === "Accepted" && (
-                        <motion.button
+                        <button
                           onClick={() => router.push(`/messages?request=${req.id}`)}
                           className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
                         >
                           <MessageSquare size={16} className="mr-2" /> Iniciar Conversa
-                        </motion.button>
+                        </button>
                       )}
                     </div>
                   </div>
                 </motion.article>
               ))}
+              <div ref={observerTarget} className="w-full flex justify-center items-center py-8 mt-2">
+                {isLoading && (
+                  <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />
+                )}
+                {hasError && (
+                  <div className="text-center">
+                    <p className="text-red-500 mb-2">Erro ao carregar mais solicitações</p>
+                    <button
+                      onClick={handleRetry}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Tentar novamente
+                    </button>
+                  </div>
+                )}
+                {!isLoading && !hasError && nextUrl === null && sortedRequests.length > 0 && (
+                  <p className="text-gray-500">Não há mais solicitações para mostrar</p>
+                )}
+              </div>
               <Goback />
             </motion.div>
           )}

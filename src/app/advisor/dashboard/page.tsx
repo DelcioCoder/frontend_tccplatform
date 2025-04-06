@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import Goback from "@/components/GoBack";
 import {
@@ -17,67 +16,129 @@ import {
 
 export default function AdvisorDashboard() {
   const [requests, setRequests] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const router = useRouter();
+  const [nextUrl, setNextUrl] = useState<string | null>("initial"); // Para rastrear a próxima página
+  const [hasError, setHasError] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const fetchRequests = async () => {
+  // Função para carregar solicitações
+  const loadMoreRequests = useCallback(async () => {
+    if (isLoading || hasError || nextUrl === null) return;
+
+    try {
       setIsLoading(true);
-      try {
-        const response = await fetch('/api/connections/advisor/requests');
-        if (response.ok) {
-          const data = await response.json();
-          setRequests(data.results);
-        } else {
-          console.error('Erro ao buscar solicitações', response.status);
+      const pageToFetch = nextUrl === "initial" ? "1" : nextUrl ? new URL(nextUrl).searchParams.get("page") || "1" : "1";
+      const response = await fetch(`/api/connections/advisor/requests?page=${pageToFetch}`);
+      
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar solicitações: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (nextUrl === "initial") {
+        setRequests(data.results);
+      } else {
+        setRequests(prev => [...prev, ...data.results]);
+      }
+      setNextUrl(data.next);
+      setHasError(false);
+    } catch (error) {
+      console.error("Erro ao carregar solicitações:", error);
+      setHasError(true);
+      setNextUrl(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, nextUrl, hasError]);
+
+  // Carrega os dados iniciais
+  useEffect(() => {
+    if (nextUrl === "initial") {
+      loadMoreRequests();
+    }
+  }, [loadMoreRequests, nextUrl]);
+
+  // Configura o Intersection Observer para infinite scroll
+  useEffect(() => {
+    if (nextUrl === null || isLoading || hasError || nextUrl === "initial") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreRequests();
         }
-      } catch (error) {
-        console.error('Erro ao buscar solicitações', error);
-      } finally {
-        setIsLoading(false);
+      },
+      {
+        root: null,
+        rootMargin: "100px",
+        threshold: 0.1,
+      }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
       }
     };
-    fetchRequests();
-  }, []);
+  }, [nextUrl, isLoading, loadMoreRequests, hasError]);
 
+  // Funções para aceitar e rejeitar solicitações
   const handleAccept = async (id: number) => {
     try {
       const response = await fetch(`/api/connections/advisor/response/${id}/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Accepted', response_message: 'Sim, aceito a sua solicitação' }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "Accepted", response_message: "Sim, aceito a sua solicitação" }),
       });
-      if (!response.ok) throw new Error('Erro ao aceitar solicitação');
+      if (!response.ok) throw new Error("Erro ao aceitar solicitação");
       const data = await response.json();
-      console.log('Solicitação aceita:', data);
-      setRequests(requests.map(req => (req.id === id ? { ...req, status: 'Accepted' } : req)));
+      console.log("Solicitação aceita:", data);
+      setRequests(requests.map(req => (req.id === id ? { ...req, status: "Accepted" } : req)));
     } catch (error) {
-      console.error('Erro ao aceitar solicitação:', error);
+      console.error("Erro ao aceitar solicitação:", error);
     }
   };
 
   const handleReject = async (id: number) => {
     try {
       const response = await fetch(`/api/connections/advisor/response/${id}/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'Rejected', response_message: 'Não posso aceitar agora' }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "Rejected", response_message: "Não posso aceitar agora" }),
       });
-      if (!response.ok) throw new Error('Erro ao rejeitar solicitação');
+      if (!response.ok) throw new Error("Erro ao rejeitar solicitação");
       const data = await response.json();
-      console.log('Solicitação rejeitada:', data);
-      setRequests(requests.map(req => (req.id === id ? { ...req, status: 'Rejected' } : req)));
+      console.log("Solicitação rejeitada:", data);
+      setRequests(requests.map(req => (req.id === id ? { ...req, status: "Rejected" } : req)));
     } catch (error) {
-      console.error('Erro ao rejeitar solicitação:', error);
+      console.error("Erro ao rejeitar solicitação:", error);
     }
   };
 
+  // Função para tentar novamente em caso de erro
+  const handleRetry = () => {
+    setHasError(false);
+    if (requests.length === 0) {
+      setNextUrl("initial");
+    } else {
+      const nextPage = Math.ceil(requests.length / 5) + 1; // Assumindo 5 itens por página
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      setNextUrl(`${apiUrl}/connections/advisor/requests/?page=${nextPage}`);
+    }
+  };
+
+  // Filtragem e ordenação
   const filteredRequests = requests.filter((req) => {
-    const matchesSearch = !searchQuery || 
-      req.student_username.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const matchesSearch =
+      !searchQuery ||
+      req.student_username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       req.message.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filter === "all" || req.status.toLowerCase() === filter;
     return matchesSearch && matchesFilter;
@@ -192,11 +253,11 @@ export default function AdvisorDashboard() {
         {/* Lista de Solicitações */}
         <section aria-labelledby="requests-heading">
           <h2 id="requests-heading" className="sr-only">Solicitações de orientação</h2>
-          {isLoading ? (
+          {isLoading && requests.length === 0 ? (
             <div className="flex justify-center py-12">
               <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />
             </div>
-          ) : sortedRequests.length === 0 ? (
+          ) : sortedRequests.length === 0 && !hasError && nextUrl === null ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -207,7 +268,7 @@ export default function AdvisorDashboard() {
               <p className="text-gray-500">
                 {searchQuery || filter !== "all"
                   ? "Nenhuma solicitação corresponde aos filtros."
-                  : "Você não tem solicitações pendentes no momento."}
+                  : "Você não tem solicitações no momento."}
               </p>
             </motion.div>
           ) : (
@@ -227,7 +288,7 @@ export default function AdvisorDashboard() {
                         <div>
                           <h3 className="text-lg font-semibold text-gray-800">{req.student_username}</h3>
                           <time className="text-sm text-gray-500">
-                            {req.created_at ? new Date(req.created_at).toLocaleDateString('pt-BR') : 'Data não disponível'}
+                            {req.created_at ? new Date(req.created_at).toLocaleDateString("pt-BR") : "Data não disponível"}
                           </time>
                         </div>
                       </div>
@@ -275,6 +336,26 @@ export default function AdvisorDashboard() {
                   </div>
                 </motion.article>
               ))}
+              <div
+                ref={observerTarget}
+                className="w-full flex justify-center items-center py-8 mt-2"
+              >
+                {isLoading && <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-700 rounded-full animate-spin" />}
+                {hasError && (
+                  <div className="text-center">
+                    <p className="text-red-500 mb-2">Erro ao carregar mais solicitações</p>
+                    <button
+                      onClick={handleRetry}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Tentar novamente
+                    </button>
+                  </div>
+                )}
+                {!isLoading && !hasError && nextUrl === null && sortedRequests.length > 0 && (
+                  <p className="text-gray-500">Não há mais solicitações para mostrar</p>
+                )}
+              </div>
               <Goback />
             </motion.div>
           )}
