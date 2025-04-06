@@ -33,7 +33,7 @@ export default function StudentDashboard() {
         const response = await fetch('/api/connections/student/requests/');
         if (response.ok) {
           const data = await response.json();
-          setRequests(data);
+          setRequests(data.results);
         } else {
           console.error('Erro ao buscar solicitações', response.status);
         }

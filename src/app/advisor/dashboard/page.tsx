@@ -30,7 +30,7 @@ export default function AdvisorDashboard() {
         const response = await fetch('/api/connections/advisor/requests');
         if (response.ok) {
           const data = await response.json();
-          setRequests(data);
+          setRequests(data.results);
         } else {
           console.error('Erro ao buscar solicitações', response.status);
         }
