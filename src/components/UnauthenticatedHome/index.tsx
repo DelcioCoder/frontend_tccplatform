@@ -1,10 +1,13 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { GraduationCap, CheckCircle, Shield, Users, BookOpen, Award, Calendar, Zap, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { GraduationCap, CheckCircle, Users, BookOpen, Calendar, ArrowRight, Award, Zap } from 'lucide-react';
+import FeatureCard from '../FeatureCard';
+import TestimonialCard from '../TestimonialCard'; 
+import IconTextCard from '../IconTextCard';
 
 
 export default function UnauthenticatedHome() {
@@ -72,12 +75,10 @@ export default function UnauthenticatedHome() {
               >
                 <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 shadow-xl">
                   <Image 
-                    src=""
-                    alt="Estudantes trabalhando em TCC" 
+                    src="/public/ChatGPT Image 31 de mar. de 2025, 14_23_50.png" 
+                    alt="Student and teacher talking" 
                     className="w-full h-auto rounded-lg mb-4"
-                    width={500}
-                    height={350}
-
+                    width={400} height={300} 
                   />
                   <div className="flex items-center gap-3 mb-2">
                     <Image
@@ -107,19 +108,10 @@ export default function UnauthenticatedHome() {
         {/* Features Section dentro do Hero */}
         <div className="max-w-6xl mx-auto mt-16">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="text-emerald-300 flex-shrink-0" size={24} />
-                <p className="text-white font-medium">Consultoria acadêmica gratuita</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Shield className="text-emerald-300 flex-shrink-0" size={24} />
-                <p className="text-white font-medium">Pagamentos protegidos</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <Users className="text-emerald-300 flex-shrink-0" size={24} />
-                <p className="text-white font-medium">Orientadores verificados</p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> 
+              <IconTextCard icon={CheckCircle} text="Consultoria acadêmica gratuita" />
+              <IconTextCard icon={Users} text="Pagamentos protegidos" />
+              <IconTextCard icon={Users} text="Orientadores verificados" />
             </div>
           </div>
         </div>
@@ -141,96 +133,45 @@ export default function UnauthenticatedHome() {
               Uma plataforma completa que facilita todo o processo de desenvolvimento do seu trabalho acadêmico, desde a escolha do orientador até a entrega final.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all"
-            >
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Users className="text-blue-700" size={24} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">1. Encontre o orientador ideal</h3>
-              <p className="text-gray-600 mb-4">
-                Pesquise entre centenas de orientadores qualificados por área de conhecimento, universidade e disponibilidade de horário.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Perfis detalhados com experiência acadêmica</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Avaliações de outros estudantes</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Filtros por tema e especialidade</span>
-                </li>
-              </ul>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
+              <FeatureCard
+                icon={Users}
+                title="1. Encontre o orientador ideal"
+                description="Pesquise entre centenas de orientadores qualificados por área de conhecimento, universidade e disponibilidade de horário."
+                checks={[
+                  "Perfis detalhados com experiência acadêmica",
+                  "Avaliações de outros estudantes",
+                  "Filtros por tema e especialidade",
+                ]}
+              />
             </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all"
-            >
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Calendar className="text-blue-700" size={24} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">2. Agende e gerencie reuniões</h3>
-              <p className="text-gray-600 mb-4">
-                Marque encontros de orientação que se encaixem na sua agenda e acompanhe o progresso do seu trabalho.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Calendário integrado com notificações</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Videoconferências dentro da plataforma</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Registro de anotações de cada encontro</span>
-                </li>
-              </ul>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} viewport={{ once: true }}>
+              <FeatureCard
+                icon={Calendar}
+                title="2. Agende e gerencie reuniões"
+                description="Marque encontros de orientação que se encaixem na sua agenda e acompanhe o progresso do seu trabalho."
+                checks={[
+                  "Calendário integrado com notificações",
+                  "Videoconferências dentro da plataforma",
+                  "Registro de anotações de cada encontro",
+                ]}
+              />
             </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all"
-            >
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <BookOpen className="text-blue-700" size={24} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">3. Desenvolva seu TCC</h3>
-              <p className="text-gray-600 mb-4">
-                Utilize nossas ferramentas exclusivas para redigir, revisar e aprimorar seu trabalho acadêmico.
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Editor colaborativo em tempo real</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Ferramentas de formatação ABNT</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle className="text-emerald-600 flex-shrink-0 mt-1" size={16} />
-                  <span className="text-gray-700">Verificador de plágio e corretor gramatical</span>
-                </li>
-              </ul>
+
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} viewport={{ once: true }}>
+              <FeatureCard
+                icon={BookOpen}
+                title="3. Desenvolva seu TCC"
+                description="Utilize nossas ferramentas exclusivas para redigir, revisar e aprimorar seu trabalho acadêmico."
+                checks={[
+                  "Editor colaborativo em tempo real",
+                  "Ferramentas de formatação ABNT",
+                  "Verificador de plágio e corretor gramatical",
+                ]}
+              />
             </motion.div>
           </div>
         </div>
@@ -248,20 +189,13 @@ export default function UnauthenticatedHome() {
                 Mais de 5.000 estudantes já concluíram seus trabalhos com sucesso através da nossa plataforma. Junte-se a eles e tenha uma experiência acadêmica incrível.
               </p>
               <div className="flex flex-wrap gap-4 mb-6">
-                <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg flex items-center gap-2">
-                  <Users className="text-emerald-300" size={20} />
-                  <span className="text-white">+2.500 orientadores</span>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg flex items-center gap-2">
-                  <Award className="text-emerald-300" size={20} />
-                  <span className="text-white">98% de aprovação</span>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg flex items-center gap-2">
-                  <Zap className="text-emerald-300" size={20} />
-                  <span className="text-white">Suporte 24/7</span>
-                </div>
+                <IconTextCard icon={Users} text="+2.500 orientadores" />
+                <IconTextCard icon={Award} text="98% de aprovação" />
+                <IconTextCard icon={Zap} text="Suporte 24/7" />
               </div>
             </div>
+
+            {/* Botão de CTA */}
             <div className="md:w-1/3">
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Crie sua conta gratuitamente</h3>
@@ -298,122 +232,42 @@ export default function UnauthenticatedHome() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md"
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} viewport={{ once: true }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <Image 
-                  src="/api/placeholder/50/50" 
-                  alt="Avatar" 
-                  className="rounded-full" 
-                  width={12}
-                  height={12}
-                />
-                <div>
-                  <p className="font-bold text-gray-800">Marcos Silva</p>
-                  <p className="text-gray-600 text-sm">Administração • UFMG</p>
-                </div>
-              </div>
-              <p className="text-gray-700 mb-4">
-                "A plataforma foi essencial para eu conseguir concluir meu TCC no prazo. Meu orientador me ajudou a definir um tema relevante e me acompanhou em cada etapa do processo."
-              </p>
-              <div className="flex text-yellow-400">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-              </div>
+              <TestimonialCard
+                avatarSrc="/api/placeholder/50/50"
+                avatarAlt="Marcos Silva Avatar"
+                name="Marcos Silva"
+                role="Administração • UFMG"
+                description="A plataforma foi essencial para eu conseguir concluir meu TCC no prazo. Meu orientador me ajudou a definir um tema relevante e me acompanhou em cada etapa do processo."
+                stars={5}
+              />
             </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md"
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} viewport={{ once: true }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <Image 
-                  src="/api/placeholder/50/50" 
-                  alt="Avatar" 
-                  className="rounded-full" 
-                  width={12}
-                  height={12}
-                />
-                <div>
-                  <p className="font-bold text-gray-800">Juliana Costa</p>
-                  <p className="text-gray-600 text-sm">Psicologia • USP</p>
-                </div>
-              </div>
-              <p className="text-gray-700 mb-4">
-                "As ferramentas de formatação automática me pouparam horas de trabalho. Além disso, meu orientador estava sempre disponível para tirar dúvidas. Nota 10 para a plataforma!"
-              </p>
-              <div className="flex text-yellow-400">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-              </div>
+              <TestimonialCard
+                avatarSrc="/api/placeholder/50/50"
+                avatarAlt="Juliana Costa Avatar"
+                name="Juliana Costa"
+                role="Psicologia • USP"
+                description="As ferramentas de formatação automática me pouparam horas de trabalho. Além disso, meu orientador estava sempre disponível para tirar dúvidas. Nota 10 para a plataforma!"
+                stars={5}
+              />
             </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md"
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} viewport={{ once: true }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <Image 
-                  src="/api/placeholder/50/50" 
-                  alt="Avatar" 
-                  className="w-12 h-12 rounded-full" 
-                  width={50}
-                  height={50}
-                />
-                <div>
-                  <p className="font-bold text-gray-800">Pedro Oliveira</p>
-                  <p className="text-gray-600 text-sm">Engenharia • UFRJ</p>
-                </div>
-              </div>
-              <p className="text-gray-700 mb-4">
-                "Mesmo morando longe do campus, consegui encontrar um orientador perfeito para meu TCC. A plataforma facilitou a minha vida!"
-              </p>
-              <div className="flex text-yellow-400">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"></svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"></svg>
-                </div>
+              <TestimonialCard
+                avatarSrc="/api/placeholder/50/50"
+                avatarAlt="Pedro Oliveira Avatar"
+                name="Pedro Oliveira"
+                role="Engenharia • UFRJ"
+                description="Mesmo morando longe do campus, consegui encontrar um orientador perfeito para meu TCC. A plataforma facilitou a minha vida!"
+                stars={5}
+              />
             </motion.div>
           </div>
         </div>
