@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useConversation } from '@/contexts/ConversationContext';
 import {
   GraduationCap,
   Home,
@@ -22,6 +23,11 @@ export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { userType, isLoading } = useUserType(); // Hook personalizado para gerenciar o tipo de usuário
   const router = useRouter();
+  const { conversationId } = useConversation();
+
+  const chatHref = conversationId ? `/chat?conversationId=${conversationId}` : '/chat';
+
+
 
   const handleProfileClick = () => {
     setIsModalOpen(true);
@@ -60,37 +66,37 @@ export default function Navbar() {
       // Retornamos um placeholder para evitar layout shift
       return <div className="h-5 w-24 animate-pulse bg-gray-200 rounded-full"></div>;
     }
-    
+
     if (userType === "student") {
       return (
-        <NavLink 
-          href="/student/dashboard" 
-          icon={<LayoutDashboard className="h-5 w-5" />} 
-          text="Dashboard" 
+        <NavLink
+          href="/student/dashboard"
+          icon={<LayoutDashboard className="h-5 w-5" />}
+          text="Dashboard"
         />
       );
     }
-    
+
     if (userType === "advisor") {
       return (
-        <NavLink 
-          href="/advisor/dashboard" 
-          icon={<LayoutDashboard className="h-5 w-5" />} 
-          text="Dashboard" 
+        <NavLink
+          href="/advisor/dashboard"
+          icon={<LayoutDashboard className="h-5 w-5" />}
+          text="Dashboard"
         />
       );
     }
-    
+
     return null;
   };
 
   const renderConnectLink = () => {
     if (!isLoading && userType === "student") {
       return (
-        <NavLink 
-          href="/connect" 
-          icon={<Users className="h-5 w-5" />} 
-          text="Conectar" 
+        <NavLink
+          href="/connect"
+          icon={<Users className="h-5 w-5" />}
+          text="Conectar"
         />
       );
     }
@@ -127,7 +133,7 @@ export default function Navbar() {
             <NavLink href="/" icon={<Home className="h-5 w-5" />} text="Início" />
             {renderConnectLink()}
             {renderDashboardLink()}
-            <NavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
+            <NavLink href={chatHref} icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
             {/* Para o perfil, usamos botão que abre o modal */}
             <button
               onClick={handleProfileClick}
@@ -177,11 +183,11 @@ export default function Navbar() {
                 )}
                 {!isLoading && userType === "student" && (
                   <MobileNavLink href="/student/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
-                )}  
+                )}
                 {!isLoading && userType === "advisor" && (
                   <MobileNavLink href="/advisor/dashboard" icon={<LayoutDashboard className="h-5 w-5" />} text="Dashboard" />
                 )}
-                <MobileNavLink href="/messages" icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
+                <MobileNavLink href={chatHref} icon={<MessageCircle className="h-5 w-5" />} text="Mensagens" />
                 {/* Link de Perfil no Mobile: abre o modal */}
                 <button
                   onClick={handleProfileClick}

@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Goback from "@/components/GoBack";
 import Spinner from "@/components/Spinner";
+import { useConversation } from '@/contexts/ConversationContext';
+
+
 import {
   Bell,
   User,
@@ -26,7 +29,36 @@ export default function StudentDashboard() {
   const [nextUrl, setNextUrl] = useState<string | null>("initial"); // Para rastrear a próxima página
   const [hasError, setHasError] = useState(false);
   const observerTarget = useRef<HTMLDivElement>(null);
+  const { setConversationId } = useConversation();
   const router = useRouter();
+
+  // Faz um fetch para o endpoint interno
+  async function handleConversation(req: any) {
+    try {
+      const response = await fetch("/api/chat/get_or_create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          advisor_id: req.advisor_id,
+          student_id: req.student_id,
+        })
+      });
+      if (!response.ok) {
+        throw new Error("Erro ao criar ou obter a conversa");
+      }
+      const data = await response.json();
+      const conversationId = data.id;
+      setConversationId(conversationId);
+
+      router.push(`/chat/?conversationId=${conversationId}`);
+    } catch (error) {
+      console.error("Erro ao iniciar conversa:", error);
+    }
+  }
+
+
 
   // Função para carregar mais solicitações
   const loadMoreRequests = useCallback(async () => {
@@ -105,7 +137,7 @@ export default function StudentDashboard() {
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
       !searchQuery ||
-      req.advisor_username.toLowerCase  .includes(searchQuery.toLowerCase()) ||
+      req.advisor_username.toLowerCase.includes(searchQuery.toLowerCase()) ||
       req.message.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filter === "all" || req.status.toLowerCase() === filter.toLowerCase();
     return matchesSearch && matchesFilter;
@@ -116,6 +148,7 @@ export default function StudentDashboard() {
       ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
+  console.log("requests", requests);
 
   // Variáveis para animação com Framer Motion
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } };
@@ -277,23 +310,22 @@ export default function StudentDashboard() {
                     </div>
                     <div className="flex flex-col items-center gap-2 md:w-48">
                       <span
-                        className={`px-4 py-2 rounded-lg text-white text-center ${
-                          req.status === "Accepted"
-                            ? "bg-emerald-600"
-                            : req.status === "Rejected"
+                        className={`px-4 py-2 rounded-lg text-white text-center ${req.status === "Accepted"
+                          ? "bg-emerald-600"
+                          : req.status === "Rejected"
                             ? "bg-red-600"
                             : "bg-gray-500"
-                        }`}
+                          }`}
                       >
                         {req.status === "Accepted"
                           ? "Aceita"
                           : req.status === "Rejected"
-                          ? "Rejeitada"
-                          : "Pendente"}
+                            ? "Rejeitada"
+                            : "Pendente"}
                       </span>
                       {req.status === "Accepted" && (
                         <button
-                          onClick={() => router.push(`/messages?request=${req.id}`)}
+                          onClick={() => handleConversation(req)}
                           className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer"
                         >
                           <MessageSquare size={16} className="mr-2" /> Iniciar Conversa
