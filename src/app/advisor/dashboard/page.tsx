@@ -326,7 +326,7 @@ export default function AdvisorDashboard() {
                         </>
                       ) : (
                         <span
-                          className={`px-4 py-2 rounded-lg text-white text-center ${
+                          className={`px-4 py-2 rounded-lg mt-15 text-white text-center ${
                             req.status === "Accepted" ? "bg-emerald-600" : "bg-red-600"
                           }`}
                         >
