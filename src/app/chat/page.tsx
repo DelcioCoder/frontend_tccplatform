@@ -1,4 +1,3 @@
-// pages/chat.tsx
 'use client';
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
@@ -41,7 +40,7 @@ const Spinner = () => (
 );
 
 // Componente para um item de conversa individual
-const ConversationItem = ({ conversation, currentUserId, onClick }) => {
+const ConversationItem = ({ conversation, currentUserId, onClick }: { conversation: Conversation, currentUserId: number, onClick: (conv: Conversation) => void }) => {
   const isAdvisor = conversation.advisor === currentUserId;
   const otherPersonName = isAdvisor ? conversation.student_username : conversation.advisor_username;
   const formattedDate = new Date(conversation.updated_at).toLocaleDateString();
@@ -85,7 +84,7 @@ function ConversationsList() {
   const { setConversationId } = useConversation();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentUserId, setCurrentUserId] = useState(21); // Valor padrão, ajuste para extrair do contexto de autenticação
+  const [currentUserId, setCurrentUserId] = useState(21); // Ajuste conforme o contexto de autenticação
 
   useEffect(() => {
     async function fetchConversations() {
@@ -150,7 +149,7 @@ function ConversationsList() {
   return (
     <div className="flex flex-col h-full">
       {/* Busca */}
-      <div className="mb-4">
+      <div className="mb-4 px-4">
         <div className="relative">
           <input
             type="text"
@@ -172,7 +171,7 @@ function ConversationsList() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center h-64 text-center"
+          className="flex flex-col items-center justify-center h-64 text-center px-4"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -182,7 +181,7 @@ function ConversationsList() {
         </motion.div>
       ) : (
         <motion.ul 
-          className="space-y-2 overflow-y-auto flex-1 pr-1"
+          className="space-y-2 overflow-y-auto flex-1 pr-1 px-4"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -208,10 +207,13 @@ function ConversationsList() {
 const ChatPage = () => {
   const { conversationId } = useConversation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
   
   // Detectar tamanho de tela para responsividade
   useEffect(() => {
     const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      // Em telas menores que 768px, usamos overlay para a sidebar
       if (window.innerWidth < 768) {
         setSidebarOpen(!conversationId);
       } else {
@@ -227,22 +229,37 @@ const ChatPage = () => {
 
   return (
     <div className="container mx-auto py-6 px-4 h-[calc(100vh-64px)]">
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 h-full">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 h-full relative">
         <div className="flex h-full">
           {/* Barra lateral de conversas - responsiva */}
           <AnimatePresence>
             {sidebarOpen && (
               <motion.div 
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: "auto", opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
+                initial={{ x: windowWidth < 768 ? "-100%" : 0, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: windowWidth < 768 ? "-100%" : 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="w-full md:w-80 border-r border-gray-200 h-full flex flex-col"
+                className={`${windowWidth < 768 ? "fixed inset-y-0 left-0 z-30 w-72 bg-white" : "w-full md:w-80 border-r border-gray-200"} h-full flex flex-col`}
               >
-                <div className="p-4 border-b border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-800">Mensagens</h2>
-                  <p className="text-sm text-gray-500">Gerencie suas conversas</p>
-                </div>
+                {windowWidth < 768 && (
+                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Mensagens</h2>
+                      <p className="text-sm text-gray-500">Gerencie suas conversas</p>
+                    </div>
+                    <button onClick={() => setSidebarOpen(false)} className="text-gray-500 hover:text-blue-600 focus:outline-none">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                {windowWidth >= 768 && (
+                  <div className="p-4 border-b border-gray-200">
+                    <h2 className="text-xl font-bold text-gray-800">Mensagens</h2>
+                    <p className="text-sm text-gray-500">Gerencie suas conversas</p>
+                  </div>
+                )}
                 <div className="flex-1 overflow-hidden p-3">
                   <ConversationsList />
                 </div>
@@ -253,17 +270,13 @@ const ChatPage = () => {
           {/* Área principal do chat */}
           <div className="flex-1 flex flex-col h-full relative">
             {/* Botão para mostrar/esconder sidebar em dispositivos móveis */}
-            {conversationId && (
+            {conversationId && windowWidth < 768 && !sidebarOpen && (
               <button 
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="md:hidden absolute top-4 left-4 z-10 bg-white p-2 rounded-full shadow-md border border-gray-200"
+                onClick={() => setSidebarOpen(true)}
+                className="absolute top-4 left-4 z-40 bg-white p-2 rounded-full shadow-md border border-gray-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {sidebarOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
             )}
