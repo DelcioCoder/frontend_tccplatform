@@ -162,12 +162,12 @@ export default function AdvisorDashboard() {
           <h1 className="text-2xl font-bold text-white">Dashboard do Orientador</h1>
           <div className="flex items-center gap-4">
             <button className="relative p-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white">
-              <Bell size={20} className="text-white" aria-label="Notificações" />
+              <Bell size={28} className="text-white" aria-label="Notificações" />
               <span className="absolute top-0 right-0 h-4 w-4 bg-emerald-400 rounded-full text-xs text-white flex items-center justify-center">
                 {requests.length}
               </span>
             </button>
-            <div className="h-8 w-8 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+            <div className="h-8 w-8 mb-1 rounded-full bg-emerald-500 text-white flex items-center justify-center">
               <User size={16} aria-label="Perfil do usuário" />
             </div>
           </div>
