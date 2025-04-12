@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { LogOut } from 'lucide-react';
+
 
 interface ProfileMenuModalProps {
     isOpen: boolean;
@@ -73,18 +75,7 @@ export default function ProfileMenuModal({ isOpen, onClose, onEditProfile, onLog
                             onClick={onLogout}
                             className="w-full text-left rounded-md p-3 hover:bg-gray-100 transition-colors flex items-center cursor-pointer"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5 mr-2 text-red-600"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-5-5H3zm6.293 5.293a1 1 0 011.414 0L12 9.586l1.293-1.293a1 1 0 011.414 1.414L13.414 11l1.293 1.293a1 1 0 01-1.414 1.414L12 12.414l-1.293 1.293a1 1 0 01-1.414-1.414L10.586 11 9.293 9.707a1 1 0 010-1.414z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
+                            <LogOut className="h-5 w-5 mr-2 text-blue-700" />
                             Sair
                         </button>
                     </li>
