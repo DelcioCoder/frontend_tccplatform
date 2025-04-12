@@ -1,9 +1,10 @@
 import React from 'react';
 import Image from 'next/image';
 import { CheckCircle } from 'lucide-react';
+import { StaticImageData } from 'next/image';
 
 interface TestimonialCardProps {
-  avatarSrc: string;
+  avatarSrc:  StaticImageData;
   avatarAlt: string;
   name: string;
   description: string;

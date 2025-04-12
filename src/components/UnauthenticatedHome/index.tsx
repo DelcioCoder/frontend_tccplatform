@@ -8,6 +8,8 @@ import { GraduationCap, CheckCircle, Users, BookOpen, Calendar, ArrowRight, Awar
 import FeatureCard from '../FeatureCard';
 import TestimonialCard from '../TestimonialCard'; 
 import IconTextCard from '../IconTextCard';
+import PublicAvatar from '../../../public/avatar.png'
+import StudentAndTeacherImage from '../../../public/TeacherAndStudent.png'
 
 
 export default function UnauthenticatedHome() {
@@ -75,14 +77,15 @@ export default function UnauthenticatedHome() {
               >
                 <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20 shadow-xl">
                   <Image 
-                    src="/public/ChatGPT Image 31 de mar. de 2025, 14_23_50.png" 
+                    src={StudentAndTeacherImage}
                     alt="Student and teacher talking" 
                     className="w-full h-auto rounded-lg mb-4"
+                    priority
                     width={400} height={300} 
                   />
                   <div className="flex items-center gap-3 mb-2">
                     <Image
-                      src="/api/placeholder/40/40" 
+                      src={PublicAvatar} 
                       alt="Avatar" 
                       className="rounded-full" 
                       width={40}
@@ -109,7 +112,7 @@ export default function UnauthenticatedHome() {
         <div className="max-w-6xl mx-auto mt-16">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> 
-              <IconTextCard icon={CheckCircle} text="Consultoria acadêmica gratuita" />
+              <IconTextCard icon={CheckCircle} text="Consultoria acadêmica" />
               <IconTextCard icon={Users} text="Pagamentos protegidos" />
               <IconTextCard icon={Users} text="Orientadores verificados" />
             </div>
@@ -186,10 +189,10 @@ export default function UnauthenticatedHome() {
                 Comece a transformar seu TCC hoje mesmo
               </h2>
               <p className="text-white/90 text-lg mb-6">
-                Mais de 5.000 estudantes já concluíram seus trabalhos com sucesso através da nossa plataforma. Junte-se a eles e tenha uma experiência acadêmica incrível.
+                Junte-se a nós e tenha uma experiência acadêmica incrível.
               </p>
               <div className="flex flex-wrap gap-4 mb-6">
-                <IconTextCard icon={Users} text="+2.500 orientadores" />
+                <IconTextCard icon={Users} text="+20 orientadores" />
                 <IconTextCard icon={Award} text="98% de aprovação" />
                 <IconTextCard icon={Zap} text="Suporte 24/7" />
               </div>
@@ -200,7 +203,7 @@ export default function UnauthenticatedHome() {
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Crie sua conta gratuitamente</h3>
                 <p className="text-gray-600 mb-6">
-                  Aproveite 7 dias de teste grátis com todas as funcionalidades premium desbloqueadas.
+                  Aproveite 30 dias de teste grátis com todas as funcionalidades premium desbloqueadas.
                 </p>
                 <Link 
                   href="/register" 
@@ -226,7 +229,7 @@ export default function UnauthenticatedHome() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">O que nossos usuários dizem</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Histórias reais de sucesso de estudantes que utilizaram nossa plataforma para desenvolver seus trabalhos de conclusão de curso.
+              Histórias de estudantes que utilizaram nossa plataforma para desenvolver seus trabalhos de conclusão de curso.
             </p>
           </div>
           
@@ -235,10 +238,10 @@ export default function UnauthenticatedHome() {
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} viewport={{ once: true }}
             >
               <TestimonialCard
-                avatarSrc="/api/placeholder/50/50"
+                avatarSrc={PublicAvatar}
                 avatarAlt="Marcos Silva Avatar"
                 name="Marcos Silva"
-                role="Administração • UFMG"
+                role="Administração"
                 description="A plataforma foi essencial para eu conseguir concluir meu TCC no prazo. Meu orientador me ajudou a definir um tema relevante e me acompanhou em cada etapa do processo."
                 stars={5}
               />
@@ -248,11 +251,11 @@ export default function UnauthenticatedHome() {
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} viewport={{ once: true }}
             >
               <TestimonialCard
-                avatarSrc="/api/placeholder/50/50"
+                avatarSrc={PublicAvatar}
                 avatarAlt="Juliana Costa Avatar"
                 name="Juliana Costa"
-                role="Psicologia • USP"
-                description="As ferramentas de formatação automática me pouparam horas de trabalho. Além disso, meu orientador estava sempre disponível para tirar dúvidas. Nota 10 para a plataforma!"
+                role="Psicologia"
+                description="As ferramentas da plataforma me pouparam horas de trabalho. Além disso, meu orientador estava sempre disponível para tirar dúvidas. Nota 10 para a plataforma!"
                 stars={5}
               />
             </motion.div>
@@ -261,11 +264,11 @@ export default function UnauthenticatedHome() {
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} viewport={{ once: true }}
             >
               <TestimonialCard
-                avatarSrc="/api/placeholder/50/50"
+                avatarSrc={PublicAvatar}
                 avatarAlt="Pedro Oliveira Avatar"
                 name="Pedro Oliveira"
-                role="Engenharia • UFRJ"
-                description="Mesmo morando longe do campus, consegui encontrar um orientador perfeito para meu TCC. A plataforma facilitou a minha vida!"
+                role="Engenharia"
+                description="Mesmo morando longe, consegui encontrar um orientador perfeito para meu TCC. A plataforma facilitou a minha vida!"
                 stars={5}
               />
             </motion.div>
