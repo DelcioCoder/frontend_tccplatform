@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useConversation } from "@/contexts/ConversationContext";
 import PrivateChat from "@/components/PrivateChat";
 import { AnimatePresence, motion } from "framer-motion";
-
+import Goback from "@/components/GoBack";
 // Tipos para as conversas
 interface Conversation {
   id: number;
@@ -312,7 +312,15 @@ const ChatPage = () => {
           </div>
         </div>
       </div>
+      {/* Botão de voltar em desktop */}
+    
+        <div className="hidden md:block absolute top-4 left-4 z-40">
+          <Goback />
+        </div>
+    
+     
     </div>
+
   );
 };
 
