@@ -2,28 +2,32 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import CroppedImage from '../../../public/cropped.jpeg'
+import CroppedImage2 from '../../../public/CroppedDiogo.jpg'
+import CroppedImage3 from '../../../public/lucasCropped.jpeg'
+import { StaticImageData } from 'next/image';
 
 interface Mentor {
   name: string;
   specialty: string;
-  image: string;
+  image: string | StaticImageData;
 }
 
 const mentors: Mentor[] = [
   {
-    name: "Dra. Ana Lopes",
-    specialty: "Especialista em Direito Constitucional",
-    image: "/placeholders/ana-lopes.jpg"
+    name: "Eng. Dercio Armando",
+    specialty: "Desenvolvedor de Software",
+    image:  CroppedImage 
   },
   {
-    name: "Prof. José Almeida",
-    specialty: "Líder em Pesquisa em Engenharia",
-    image: "/placeholders/jose-almeida.jpg"
+    name: "Prof. António D'Barros Diogo",
+    specialty: "Analista clínico",
+    image: CroppedImage2
   },
   {
-    name: "Dr. Pedro Santos",
-    specialty: "Inovador em Pesquisas de Saúde",
-    image: "/placeholders/pedro-santos.jpg"
+    name: "Eng. Lucas Filipe",
+    specialty: "Engenheiro de produção industrial",
+    image: CroppedImage3
   }
 ];
 
@@ -64,6 +68,7 @@ export default function FeaturedMentors() {
                   alt={mentor.name}
                   width={120}
                   height={120}
+                  quality={80}
                   className="rounded-full border-4 border-blue-700 object-cover"
                 />
               </div>
