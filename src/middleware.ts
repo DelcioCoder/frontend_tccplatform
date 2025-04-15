@@ -4,7 +4,7 @@ export async function middleware(request: NextRequest) {
     const accessToken = request.cookies.get('access')?.value;
     
     // Array de rotas públicas que não precisam de autenticação
-    const publicRoutes = ['/', '/login', '/register'];
+    const publicRoutes = ['/', '/login', '/register', '/activate'];
     const isPublicRoute = publicRoutes.includes(request.nextUrl.pathname);
 
     // Se não tiver token e tentar acessar uma rota protegida
