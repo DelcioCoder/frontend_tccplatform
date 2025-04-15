@@ -33,7 +33,7 @@ export default function AdvisorDashboard() {
       setIsLoading(true);
       const pageToFetch = nextUrl === "initial" ? "1" : nextUrl ? new URL(nextUrl).searchParams.get("page") || "1" : "1";
       const response = await fetch(`/api/connections/advisor/requests?page=${pageToFetch}`);
-      
+
       if (!response.ok) {
         throw new Error(`Erro ao buscar solicitações: ${response.status}`);
       }
@@ -326,9 +326,8 @@ export default function AdvisorDashboard() {
                         </>
                       ) : (
                         <span
-                          className={`px-4 py-2 rounded-lg mt-15 text-white text-center ${
-                            req.status === "Accepted" ? "bg-emerald-600" : "bg-red-600"
-                          }`}
+                          className={`px-4 py-2 rounded-lg mt-15 text-white text-center ${req.status === "Accepted" ? "bg-emerald-600" : "bg-red-600"
+                            }`}
                         >
                           {req.status === "Accepted" ? "Aceita" : "Rejeitada"}
                         </span>
@@ -361,6 +360,10 @@ export default function AdvisorDashboard() {
             </motion.div>
           )}
         </section>
+        <div className="mt-5">
+          <Goback />
+
+        </div>
       </main>
     </div>
   );

@@ -354,10 +354,13 @@ export default function StudentDashboard() {
                   <p className="text-gray-500">Não há mais solicitações para mostrar</p>
                 )}
               </div>
-              <Goback />
             </motion.div>
           )}
         </section>
+        <div className="mt-5">
+          <Goback />
+
+        </div>
       </main>
     </div>
   );
