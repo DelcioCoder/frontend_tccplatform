@@ -7,10 +7,11 @@ import { School, BookOpen, Calendar, Briefcase, Book, FileText } from 'lucide-re
 interface ProfileFormProps {
   userType: 'student' | 'advisor' | string | null;
   profile: any;
+  username: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-const AnimatedFormFields = ({ userType, profile, handleChange }: ProfileFormProps) => {
+const AnimatedFormFields = ({ userType, profile, handleChange, username }: ProfileFormProps) => {
   return (
     <motion.div
       key={userType}
@@ -23,6 +24,13 @@ const AnimatedFormFields = ({ userType, profile, handleChange }: ProfileFormProp
       {userType === 'student' ? (
         <>
           <div>
+            {username && (
+              <div className="mb-4 text-center">
+                <p className="text-gray-700 font-medium">
+                  Olá, <span className="text-blue-700">{username}</span>!
+                </p>
+              </div>
+            )}
             <label className="flex items-center text-gray-700 font-semibold mb-1">
               <School className="mr-2 text-blue-700" size={18} />
               Instituição
@@ -82,6 +90,13 @@ const AnimatedFormFields = ({ userType, profile, handleChange }: ProfileFormProp
       ) : (
         <>
           <div>
+            {username && (
+              <div className="mb-4 text-center">
+                <p className="text-gray-700 font-medium">
+                  Olá, <span className="text-blue-700">{username}</span>!
+                </p>
+              </div>
+            )}
             <label className="flex items-center text-gray-700 font-semibold mb-1">
               <BookOpen className="mr-2 text-blue-700" size={18} />
               Especialização
