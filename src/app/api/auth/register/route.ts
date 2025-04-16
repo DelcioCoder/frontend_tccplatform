@@ -13,11 +13,11 @@ export async function POST(request: Request) {
             body: JSON.stringify({ username, email, password, password2, user_type }),
         });
 
+        // Lê o corpo da resposta apenas uma vez
         const data = await response.json();
         
-
         if (!response.ok) {
-            const data = await response.json();
+            // Já temos os dados na variável `data`
             return NextResponse.json(data, { status: response.status });
         }
 

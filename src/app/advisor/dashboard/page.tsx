@@ -361,7 +361,6 @@ export default function AdvisorDashboard() {
           )}
         </section>
         <div className="mt-5">
-          <Goback />
 
         </div>
       </main>
