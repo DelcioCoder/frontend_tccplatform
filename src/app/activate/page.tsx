@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function ActivatePage() {
+// Componente que contém a lógica com useSearchParams
+function ActivateContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const uidb64 = searchParams.get('uidb64');
@@ -33,7 +34,7 @@ export default function ActivatePage() {
           setMessage(data.message || 'Conta ativada com sucesso!');
           localStorage.setItem('accountActivated', 'true');
           setTimeout(() => {
-            router.push('/profile?activated=true'); // Redireciona para a página de perfil após 2 segundos
+            router.push('/profile?activated=true');
           }, 2000);
         } else {
           setStatus('error');
@@ -71,5 +72,14 @@ export default function ActivatePage() {
         <p className="mt-4">{message}</p>
       </div>
     </div>
+  );
+}
+
+// Página principal que envolve o componente com Suspense
+export default function ActivatePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
+      <ActivateContent />
+    </Suspense>
   );
 }
