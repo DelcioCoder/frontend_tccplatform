@@ -151,7 +151,7 @@ export default function StudentDashboard() {
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
       !searchQuery ||
-      req.advisor_username.toLowerCase.includes(searchQuery.toLowerCase()) ||
+      req.advisor_username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       req.message.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filter === "all" || req.status.toLowerCase() === filter.toLowerCase();
     return matchesSearch && matchesFilter;
