@@ -1,8 +1,8 @@
 import React from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, LucideProps } from 'lucide-react';
 
 interface FeatureCardProps {
-  icon: React.ComponentType;
+  icon: React.ComponentType<LucideProps>;
   title: string;
   description: string;
   checks: string[];
@@ -12,7 +12,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, descriptio
   return (
     <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all">
       <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4" style={{ color: "#2563eb" }}>
-        <Icon width={24} height={24} stroke="#2563eb"/>
+        <Icon size={24} stroke="#2563eb" />
       </div>
       <h3 className="text-xl font-bold text-gray-800 mb-3">{title}</h3>
       <p className="text-gray-600 mb-4">{description}</p>
