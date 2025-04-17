@@ -84,7 +84,7 @@ function ConversationsList() {
   const { setConversationId } = useConversation();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentUserId, setCurrentUserId] = useState(21); // Ajuste conforme o contexto de autenticação
+  const [currentUserId] = useState(21); // Ajuste conforme o contexto de autenticação
 
   useEffect(() => {
     async function fetchConversations() {

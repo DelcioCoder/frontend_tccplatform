@@ -21,7 +21,7 @@ export async function GET() {
 
     // Retorna os dados da resposta diretamente, preservando o status original
     return NextResponse.json(data, { status: response.status });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Erro ao buscar o status do usuário' }, { status: 500 });
   }
 }

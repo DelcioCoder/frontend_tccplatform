@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import { CheckCircle } from 'lucide-react';
 import { StaticImageData } from 'next/image';
 
 interface TestimonialCardProps {

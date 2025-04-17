@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const conversationId = await getOrCreateConversation(advisor_id, student_id);
   
     return NextResponse.json({ id: conversationId });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch conversations" }, { status: 500 });
   }
 }

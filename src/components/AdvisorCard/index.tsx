@@ -1,6 +1,6 @@
 import { Advisor } from "@/types/advisor";
 import { User, UserPlus, BadgeCheck } from 'lucide-react'; 
-import Goback from "../GoBack";
+
 
 interface AdvisorCardProps {
   advisor: Advisor;

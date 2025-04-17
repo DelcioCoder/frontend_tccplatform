@@ -20,8 +20,22 @@ import {
   MessageSquare,
 } from "lucide-react";
 
+interface StudentDashboardDataResults {
+  id: number;
+  student_username: string;
+  advisor_username: string;
+  message: string;
+  response_message: string;
+  status: string;
+  created_at: string;
+  tags: string[];
+  advisor_id: number;
+  student_id: number;
+
+}
+
 export default function StudentDashboard() {
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<StudentDashboardDataResults[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");

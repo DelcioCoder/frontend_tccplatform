@@ -14,9 +14,10 @@ import {
   SortAsc,
   SortDesc,
 } from "lucide-react";
+import { DataResults } from "@/types/basedataresult";
 
 export default function AdvisorDashboard() {
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<DataResults[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");

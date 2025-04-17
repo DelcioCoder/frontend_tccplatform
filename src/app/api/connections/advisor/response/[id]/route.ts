@@ -39,7 +39,7 @@ export async function POST(
     const data = await apiResponse.json();
 
     return NextResponse.json(data, { status: 200})
-} catch (error) {
+} catch {
     return NextResponse.json(
         { error: 'Erro ao processar a solicitação'},
         { status: 500}

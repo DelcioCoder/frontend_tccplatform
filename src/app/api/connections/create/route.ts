@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const response = await fetch(`${apiUrl}/connections/create/`, {
+        await fetch(`${apiUrl}/connections/create/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

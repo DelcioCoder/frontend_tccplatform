@@ -25,7 +25,7 @@ export async function GET() {
         }
 
         return NextResponse.json(data);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Erro ao buscar perfil' }, { status: 500 });
     }
 }
@@ -57,7 +57,7 @@ export async function PUT(request: Request) {
         }
 
         return NextResponse.json(data);
-    } catch (error) {
+    } catch  {
         return NextResponse.json({ error: 'Erro ao atualizar perfil' }, { status: 500 });
     }
 }

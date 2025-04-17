@@ -327,7 +327,7 @@ export default function PrivateChat({
         socketRef.current.close();
       }
     };
-  }, [accessToken, setupWebSocket]);
+  }, [accessToken, setupWebSocket, fetchTokenFromServer]);
 
   const sendMessage = useCallback(() => {
     if (!newMessage.trim() || !socketRef.current || !isSocketConnected) {

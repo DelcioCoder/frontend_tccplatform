@@ -2,7 +2,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST() {
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get('refresh')?.value;
     const accessToken = cookieStore.get('access')?.value;
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         cookieStore.delete('refresh')
 
         return NextResponse.json({ message: 'Logout realizado com sucesso' }, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Erro na conexão com o servidor' }, { status: 500 });
     }
 }

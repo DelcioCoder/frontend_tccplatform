@@ -4,9 +4,19 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { School, BookOpen, Calendar, Briefcase, Book, FileText } from 'lucide-react';
 
+interface UserProfile {
+  institution: string;
+  course: string;
+  graduation_year: string;
+  tcc_interest: string;
+  specialization: string;
+  experience: string;
+  biography: string;
+}
+
 interface ProfileFormProps {
   userType: 'student' | 'advisor' | string | null;
-  profile: any;
+  profile: UserProfile;
   username: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }

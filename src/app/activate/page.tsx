@@ -39,7 +39,7 @@ export default function ActivatePage() {
           setStatus('error');
           setMessage(data.message || 'Link de ativação inválido ou expirado.');
         }
-      } catch (error) {
+      } catch {
         setStatus('error');
         setMessage('Erro ao ativar a conta.');
       } finally {

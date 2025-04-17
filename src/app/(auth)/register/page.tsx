@@ -4,7 +4,7 @@ import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GraduationCap, Mail, Lock, User, AtSign } from 'lucide-react';
+import { GraduationCap, Lock, User, AtSign } from 'lucide-react';
 import ChooseUserType from '@/components/ChooseUserType';
 import { RegisterSchema } from '@/schemas/auth';
 

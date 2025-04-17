@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface IconTextCardProps {
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   text: string;
 }
 

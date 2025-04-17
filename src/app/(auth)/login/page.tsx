@@ -57,7 +57,7 @@ export default function LoginPage() {
             general: data.error || 'Erro ao fazer login. Verifique suas credenciais.',
           });
         }
-      } catch (error) {
+      } catch {
         setErrors({
           general: 'Erro interno no servidor. Tente novamente mais tarde.',
         });
