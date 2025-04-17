@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     const { username, email, password, password2, user_type } = await request.json();
 
     try {
-        const response = await fetch('http://localhost:8000/api/users/register/', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/register/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
