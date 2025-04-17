@@ -1,5 +1,6 @@
 import { Advisor } from "@/types/advisor";
 import { User, UserPlus, BadgeCheck } from 'lucide-react'; 
+import Image from "next/image";
 
 
 interface AdvisorCardProps {
@@ -13,7 +14,7 @@ export default function AdvisorCard({ advisor, onConnect }: AdvisorCardProps) {
       {/* Header com imagem de capa e foto de perfil */}
       <div className="relative h-24 bg-gradient-to-r from-blue-50 to-indigo-50">
         {advisor.coverImage && (
-          <img
+          <Image
             src={advisor.coverImage}
             alt=""
             className="w-full h-full object-cover"
@@ -22,7 +23,7 @@ export default function AdvisorCard({ advisor, onConnect }: AdvisorCardProps) {
         <div className="absolute -bottom-10 left-6">
           <div className="relative w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden bg-white">
             {advisor.profilePicture ? (
-              <img
+              <Image
                 src={advisor.profilePicture}
                 alt={`${advisor.username}`}
                 className="w-full h-full object-cover"

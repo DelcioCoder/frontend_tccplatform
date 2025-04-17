@@ -2,7 +2,14 @@ export interface Advisor {
     user_id: number;
     username: string;
     specialization: string;
+    coverImage?: string;
     biography: string;
+    birthImage?: string;
+    profilePicture?: string;
+    isVerified?: boolean;
+    clientsCount?: number;
+    experienceYears?: number;
+    expertiseAreas?: string[];
 }
 
 export interface Student {
