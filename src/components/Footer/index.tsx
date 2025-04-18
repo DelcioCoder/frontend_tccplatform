@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
           </Link>
         </div>
         <p className="text-gray-400">
-          © 2024 TCC Connect. Construindo o futuro acadêmico de Angola.
+          © 2024 TCCLink. Construindo o futuro acadêmico de Angola.
         </p>
       </div>
     </footer>

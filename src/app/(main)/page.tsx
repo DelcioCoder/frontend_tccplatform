@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: { absolute: 'TCC Connect' },
+    title: { absolute: 'TCCLink' },
     robots: {
         index: true,
         follow: true,

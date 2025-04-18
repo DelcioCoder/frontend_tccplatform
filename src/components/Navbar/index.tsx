@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useConversation } from '@/contexts/ConversationContext';
+import Logo from '../Logo';
 import {
   GraduationCap,
   Home,
@@ -108,13 +109,8 @@ export default function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <GraduationCap className="h-8 w-8 text-emerald-600" />
-            <span className="bg-gradient-to-r from-blue-800 to-emerald-600 bg-clip-text text-2xl font-bold text-transparent font-montserrat">
-              TCC Connect
-            </span>
-          </Link>
+          {/* Logo Atualizada */}
+          <Logo />
 
           {/* Search Bar */}
           <div className="flex-grow max-w-2xl mx-8">
@@ -149,12 +145,8 @@ export default function Navbar() {
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-emerald-600" />
-            <span className="bg-gradient-to-r from-blue-800 to-emerald-600 bg-clip-text text-2xl font-bold text-transparent font-montserrat">
-              TCC Connect
-            </span>
-          </Link>
+          {/* Logo Atualizada */}
+          <Logo />
 
           <button
             onClick={() => setIsOpen(!isOpen)}

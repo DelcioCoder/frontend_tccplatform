@@ -66,7 +66,7 @@ export default function Hero() {
               animate="animate"
               variants={loadingTextVariants}
             >
-              <span className="bg-gradient-to-r from-blue-300 to-emerald-300 text-transparent text-3xl bg-clip-text font-bold">TCC Connect</span>
+              <span className="bg-gradient-to-r from-blue-300 to-emerald-300 text-transparent text-3xl bg-clip-text font-bold">TCCLink</span>
             </motion.div>
             
             {/* Animated loading line */}

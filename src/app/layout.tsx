@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | TCC Connect',
-    default: 'TCC Connect',
+    template: '%s | TCCLink',
+    default: 'TCCLink',
   },
   robots:
     {
@@ -16,19 +16,19 @@ export const metadata: Metadata = {
         nocache: true,
       },
     },
-  description: 'TCC Connect é a plataforma colaborativa que une estudantes de TCC a orientadores especializados. Converse em chat ao vivo, gerencie prazos acadêmicos e tenha suporte para desenvolver seu trabalho de conclusão de curso.',
+  description: 'TCCLink é a plataforma colaborativa que une estudantes de TCC a orientadores especializados. Converse em chat ao vivo, gerencie prazos acadêmicos e tenha suporte para desenvolver seu trabalho de conclusão de curso.',
   keywords: ['TCC', 'orientador', 'suporte acadêmico', 'chat ao vivo', 'prazos acadêmicos'],
   openGraph: {
-    title: 'TCC Connect',
+    title: 'TCCLink',
     description: 'Converse com orientadores especializados, gerencie prazos e desenvolva seu TCC com suporte completo.',
-    url: 'https://tccconnect.com',
-    siteName: 'TCC Connect',
+    url: 'https://frontend-tccplatform-sesy.vercel.app',
+    siteName: 'TCCLink',
     images: [
       {
-        url: 'https://tccconnect.com/og-image.jpg',
+        url: 'https://frontend-tccplatform-sesy.vercel.app/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'TCC Connect',
+        alt: 'TCCLink',
       },
     ],
     locale: 'pt_BR',
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TCC Connect',
+    title: 'TCCLink',
     description: 'Converse com orientadores especializados, gerencie prazos e desenvolva seu TCC com suporte completo.',
-    images: ['https://tccconnect.com/og-image.jpg'],
+    images: ['https://frontend-tccplatform-sesy.vercel.app/og-image.jpg'],
   },
 };
 

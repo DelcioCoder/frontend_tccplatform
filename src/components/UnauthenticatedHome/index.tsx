@@ -10,6 +10,7 @@ import TestimonialCard from '../TestimonialCard';
 import IconTextCard from '../IconTextCard';
 import PublicAvatar from '../../../public/avatar.png'
 import StudentAndTeacherImage from '../../../public/TeacherAndStudent.png'
+import Logo from '../Logo';
 
 
 export default function UnauthenticatedHome() {
@@ -18,8 +19,7 @@ export default function UnauthenticatedHome() {
       {/* Navbar */}
       <nav className="bg-white border-b border-gray-200 py-4 px-6 md:px-12 flex justify-between items-center">
         <div className="flex items-center">
-          <GraduationCap className="text-blue-700 mr-2" size={32} />
-          <h1 className="font-bold text-xl text-blue-700">TCC Connect</h1>
+          <Logo />
         </div>
         <div className="flex gap-4">
           <Link href="/login" className="text-gray-700 hover:text-blue-700 transition-all font-medium">

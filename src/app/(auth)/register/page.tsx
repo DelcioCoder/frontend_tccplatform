@@ -70,7 +70,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-700 to-emerald-600 flex items-center justify-center p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -79,9 +79,12 @@ export default function RegisterPage() {
         {/* Lado Esquerdo - Ilustração */}
         <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-700 to-emerald-600 p-6 md:p-10 flex flex-col justify-between">
           <div className="flex items-center">
-            <GraduationCap className="text-white mr-2" size={40} />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className='h-12 w-12 stroke-current text-white'>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+            </svg>
+
             <h1 className="font-montserrat text-2xl font-bold text-white">
-              TCC Connect
+              TCCLink
             </h1>
           </div>
           <div className="hidden md:block">
@@ -114,10 +117,10 @@ export default function RegisterPage() {
 
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input 
-                type="text" 
-                placeholder="Nome completo" 
-                required 
+              <input
+                type="text"
+                placeholder="Nome completo"
+                required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.username ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
@@ -127,10 +130,10 @@ export default function RegisterPage() {
 
             <div className="relative">
               <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input 
-                type="email" 
-                placeholder="Seu e-mail" 
-                required 
+              <input
+                type="email"
+                placeholder="Seu e-mail"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
@@ -140,10 +143,10 @@ export default function RegisterPage() {
 
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input 
-                type="password" 
-                placeholder="Crie uma senha" 
-                required 
+              <input
+                type="password"
+                placeholder="Crie uma senha"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
@@ -153,10 +156,10 @@ export default function RegisterPage() {
 
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input 
-                type="password" 
-                placeholder="Confirme sua senha" 
-                required 
+              <input
+                type="password"
+                placeholder="Confirme sua senha"
+                required
                 value={password2}
                 onChange={(e) => setPassword2(e.target.value)}
                 className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.password2 ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
@@ -164,8 +167,8 @@ export default function RegisterPage() {
               {errors.password2 && <p className="text-red-500 text-sm mt-1">{errors.password2}</p>}
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isPending}
               className="w-full bg-gradient-to-r from-blue-700 to-emerald-600 text-white py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 font-semibold cursor-pointer"
             >
@@ -175,8 +178,8 @@ export default function RegisterPage() {
 
           <div className="text-center mt-6 text-sm">
             Já tem uma conta?{' '}
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="text-blue-600 hover:underline font-semibold"
             >
               Faça login
