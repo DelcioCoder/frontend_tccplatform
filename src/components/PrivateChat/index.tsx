@@ -154,19 +154,32 @@ export default function PrivateChat({
     }
   };
 
-  const fetchChatInfo = useCallback(async () => {
-    try {
-      const mockResponse: ChatInfo = {
-        name: messages.length > 0
-          ? (messages[0].sender === currentUserId
-              ? messages[0].recipient_username
-              : messages[0].sender_username)
-          : "Carregando...",
+  function getInterlocutorName(msgs: ChatMessage[], me: number): string {
+    // Primeiro tenta encontrar uma mensagem de outro participante
+    const otherMessage = msgs.find(m => m.sender !== me);
+    if (otherMessage) return otherMessage.sender_username;
+
+    // Se não encontrar, procura uma mensagem do usuário atual para obter o recipient
+    const myMessage = msgs.find(m => m.sender === me);
+    if (myMessage) return myMessage.recipient_username;
+
+    // Caso não haja mensagens
+    return "Nova conversa";
+  }
+
+
+  useEffect(() => {
+    if (currentUserId !== null && messages.length > 0) {
+      const interlocutorName = getInterlocutorName(messages, currentUserId);
+      setChatInfo({
+        name: interlocutorName,
         status: "Online"
-      };
-      setChatInfo(mockResponse);
-    } catch (error) {
-      console.error("Erro ao buscar informações do chat:", error);
+      });
+    } else if (currentUserId) {
+      setChatInfo({
+        name: "Nova conversa",
+        status: "Online"
+      });
     }
   }, [messages, currentUserId]);
 
@@ -228,11 +241,23 @@ export default function PrivateChat({
     }
   }, [accessToken, fetchMessages]);
 
+  // useEffect para atualizar chatInfo
   useEffect(() => {
-    if (messages.length > 0 && currentUserId) {
-      fetchChatInfo();
+    if (currentUserId) {
+      if (messages.length > 0) {
+        const interlocutorName = getInterlocutorName(messages, currentUserId);
+        setChatInfo({
+          name: interlocutorName,
+          status: "Online"
+        });
+      } else {
+        setChatInfo({
+          name: "Nova conversa",
+          status: "Online"
+        });
+      }
     }
-  }, [messages, currentUserId, fetchChatInfo]);
+  }, [messages, currentUserId]);
 
   const loadMoreMessages = useCallback(() => {
     if (nextPageUrl && !isLoadingMore) {

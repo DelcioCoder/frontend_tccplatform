@@ -6,6 +6,8 @@ import { useConversation } from "@/contexts/ConversationContext";
 import PrivateChat from "@/components/PrivateChat";
 import { AnimatePresence, motion } from "framer-motion";
 import Goback from "@/components/GoBack";
+import { AuthenticatedUser } from "@/lib/api/auth";
+
 // Tipos para as conversas
 interface Conversation {
   id: number;
@@ -25,13 +27,13 @@ interface ConversationsResponse {
 
 // Componente de Spinner com animação
 const Spinner = () => (
-  <motion.div 
+  <motion.div
     className="flex justify-center items-center p-8"
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
   >
-    <motion.div 
+    <motion.div
       className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"
       animate={{ rotate: 360 }}
       transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -42,7 +44,9 @@ const Spinner = () => (
 // Componente para um item de conversa individual
 const ConversationItem = ({ conversation, currentUserId, onClick }: { conversation: Conversation, currentUserId: number, onClick: (conv: Conversation) => void }) => {
   const isAdvisor = conversation.advisor === currentUserId;
-  const otherPersonName = isAdvisor ? conversation.student_username : conversation.advisor_username;
+  const otherPersonName = isAdvisor
+    ? conversation.student_username
+    : conversation.advisor_username;
   const formattedDate = new Date(conversation.updated_at).toLocaleDateString();
   const formattedTime = new Date(conversation.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -80,17 +84,40 @@ const ConversationItem = ({ conversation, currentUserId, onClick }: { conversati
 // Componente que lista as conversas
 function ConversationsList() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const { setConversationId } = useConversation();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentUserId] = useState(21); // Ajuste conforme o contexto de autenticação
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error("Erro ao buscar usuário autenticado");
+        }
+        
+        const user: AuthenticatedUser = await response.json();
+        setCurrentUserId(user?.user_id || 0);
+      } catch (error) {
+        console.error("Erro ao buscar usuário:", error);
+      }
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     async function fetchConversations() {
       try {
         setLoading(true);
-        const response = await fetch("api/chat/conversations/", {
+        const response = await fetch("/api/chat/conversations/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -129,18 +156,18 @@ function ConversationsList() {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
-      transition: { 
-        staggerChildren: 0.1 
+      transition: {
+        staggerChildren: 0.1
       }
     }
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
       transition: { type: "spring", stiffness: 300, damping: 24 }
     }
@@ -168,7 +195,7 @@ function ConversationsList() {
 
       {/* Lista de conversas */}
       {filteredConversations.length === 0 ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="flex flex-col items-center justify-center h-64 text-center px-4"
@@ -180,7 +207,7 @@ function ConversationsList() {
           <p className="text-gray-400 text-sm mt-1">Tente outro termo de busca ou inicie uma nova conversa</p>
         </motion.div>
       ) : (
-        <motion.ul 
+        <motion.ul
           className="space-y-2 overflow-y-auto flex-1 pr-1 px-4"
           variants={containerVariants}
           initial="hidden"
@@ -189,8 +216,8 @@ function ConversationsList() {
           <AnimatePresence>
             {filteredConversations.map((conv) => (
               <motion.div key={conv.id} variants={itemVariants}>
-                <ConversationItem 
-                  conversation={conv} 
+                <ConversationItem
+                  conversation={conv}
                   currentUserId={currentUserId}
                   onClick={handleConversationClick}
                 />
@@ -208,7 +235,7 @@ const ChatPage = () => {
   const { conversationId } = useConversation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
-  
+
   // Detectar tamanho de tela para responsividade
   useEffect(() => {
     const handleResize = () => {
@@ -220,10 +247,10 @@ const ChatPage = () => {
         setSidebarOpen(true);
       }
     };
-    
+
     window.addEventListener('resize', handleResize);
     handleResize(); // Configuração inicial
-    
+
     return () => window.removeEventListener('resize', handleResize);
   }, [conversationId]);
 
@@ -234,7 +261,7 @@ const ChatPage = () => {
           {/* Barra lateral de conversas - responsiva */}
           <AnimatePresence>
             {sidebarOpen && (
-              <motion.div 
+              <motion.div
                 initial={{ x: windowWidth < 768 ? "-100%" : 0, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: windowWidth < 768 ? "-100%" : 0, opacity: 0 }}
@@ -271,7 +298,7 @@ const ChatPage = () => {
           <div className="flex-1 flex flex-col h-full relative">
             {/* Botão para mostrar/esconder sidebar em dispositivos móveis */}
             {conversationId && windowWidth < 768 && !sidebarOpen && (
-              <button 
+              <button
                 onClick={() => setSidebarOpen(true)}
                 className="absolute top-4 left-4 z-40 bg-white p-2 rounded-full shadow-md border border-gray-200"
               >
@@ -280,10 +307,10 @@ const ChatPage = () => {
                 </svg>
               </button>
             )}
-            
+
             {/* Componente de Chat */}
             <AnimatePresence mode="wait">
-              <motion.div 
+              <motion.div
                 key={conversationId || 'empty'}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -313,14 +340,10 @@ const ChatPage = () => {
         </div>
       </div>
       {/* Botão de voltar em desktop */}
-    
-        <div className="hidden md:block absolute top-4 left-4 z-40">
-          <Goback />
-        </div>
-    
-     
+      <div className="hidden md:block absolute top-4 left-4 z-40">
+        <Goback />
+      </div>
     </div>
-
   );
 };
 
