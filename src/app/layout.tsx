@@ -6,16 +6,16 @@ export const metadata: Metadata = {
     default: 'TCCLink',
   },
   robots:
-    {
+  {
+    index: true,
+    follow: true,
+    nocache: true,
+    googleBot: {
       index: true,
       follow: true,
       nocache: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        nocache: true,
-      },
     },
+  },
   description: 'TCCLink é a plataforma colaborativa que une estudantes de TCC a orientadores especializados. Converse em chat ao vivo, gerencie prazos acadêmicos e tenha suporte para desenvolver seu trabalho de conclusão de curso.',
   keywords: ['TCC', 'orientador', 'suporte acadêmico', 'chat ao vivo', 'prazos acadêmicos'],
   openGraph: {
@@ -54,6 +54,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="google-site-verification" content="RBoSJTOl7CYMp08m-MI13VeVGSHQs6K-4NDNVBLwhKU" />
+      </head>
       <body className="antialiased">
         <PageTransition>
           <ConversationProvider>
