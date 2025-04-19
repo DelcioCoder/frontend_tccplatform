@@ -62,7 +62,19 @@ export default function RegisterPage() {
         } else {
           // Tratar erros retornados pela API
           const data = await response.json();
-          setErrors({ general: data.error || 'Erro ao registrar. Tente novamente.' });
+          
+          const apiErrors: Record<string, string> = {};
+          Object.entries(data).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              apiErrors[key] = value[0];
+            } else if (typeof value === 'string') {
+              apiErrors[key] = value;
+            } else {
+              apiErrors[key] = 'Erro desconhecido';
+            }
+          });
+
+          setErrors(apiErrors);
         }
       } catch (error) {
         setErrors({ general: 'Erro interno no servidor. Tente novamente mais tarde.' });
