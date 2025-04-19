@@ -54,9 +54,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="google-site-verification" content="RBoSJTOl7CYMp08m-MI13VeVGSHQs6K-4NDNVBLwhKU" />
-      </head>
       <body className="antialiased">
         <PageTransition>
           <ConversationProvider>

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Head from 'next/head';
 
 export const metadata: Metadata = {
     title: { absolute: 'TCCLink' },
@@ -26,6 +27,11 @@ export default async function Home() {
 
     return (
         <div>
+            <Head>
+
+                <meta name="google-site-verification" content="RBoSJTOl7CYMp08m-MI13VeVGSHQs6K-4NDNVBLwhKU" />
+
+            </Head>
             {isAuthenticated ? (
                 <>
                     <Hero />
