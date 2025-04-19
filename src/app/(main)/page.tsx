@@ -3,6 +3,9 @@ import Head from 'next/head';
 
 export const metadata: Metadata = {
     title: { absolute: 'TCCLink' },
+    verification: {
+        google: 'RBoSJTOl7CYMp08m-MI13VeVGSHQs6K-4NDNVBLwhKU',
+    },
     robots: {
         index: true,
         follow: true,
@@ -27,11 +30,6 @@ export default async function Home() {
 
     return (
         <div>
-            <Head>
-
-                <meta name="google-site-verification" content="RBoSJTOl7CYMp08m-MI13VeVGSHQs6K-4NDNVBLwhKU" />
-
-            </Head>
             {isAuthenticated ? (
                 <>
                     <Hero />
