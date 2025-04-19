@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'TCCLink',
     images: [
       {
-        url: 'https://frontend-tccplatform-sesy.vercel.app/og-image.jpg',
+        url: '/LogoTCCLink.png',
         width: 1200,
         height: 630,
         alt: 'TCCLink',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'TCCLink',
     description: 'Converse com orientadores especializados, gerencie prazos e desenvolva seu TCC com suporte completo.',
-    images: ['https://frontend-tccplatform-sesy.vercel.app/og-image.jpg'],
+    images: ['/LogoTCCLink.png'],
   },
 };
 
