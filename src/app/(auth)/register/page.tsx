@@ -4,12 +4,13 @@ import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { GraduationCap, Lock, User, AtSign } from 'lucide-react';
+import { Lock, User, AtSign } from 'lucide-react';
 import ChooseUserType from '@/components/ChooseUserType';
 import { RegisterSchema } from '@/schemas/auth';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
+  const [last_name, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
@@ -24,6 +25,7 @@ export default function RegisterPage() {
     // Validação com Zod
     const validation = RegisterSchema.safeParse({
       username,
+      last_name,
       email,
       password,
       password2,
@@ -51,7 +53,7 @@ export default function RegisterPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ username, email, password, password2, user_type }),
+          body: JSON.stringify({ username, last_name, email, password, password2, user_type }),
         });
 
         if (response.ok) {
@@ -119,13 +121,26 @@ export default function RegisterPage() {
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
-                placeholder="Nome completo"
+                placeholder="Primeiro nome"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.username ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
               />
               {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
+            </div>
+
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Sobrenome"
+                required
+                value={last_name}
+                onChange={(e) => setLastName(e.target.value)}
+                className={`w-full pl-10 px-4 py-3 rounded-lg border ${errors.last_name ? 'border-red-500' : 'border-gray-300'} text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600`}
+              />
+              {errors.last_name && <p className="text-red-500 text-sm mt-1">{errors.last_name}</p>}
             </div>
 
             <div className="relative">

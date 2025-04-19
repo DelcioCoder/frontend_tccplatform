@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useConversation } from '@/contexts/ConversationContext';
 import Logo from '../Logo';
 import {
-  GraduationCap,
   Home,
   Users,
   MessageCircle,
