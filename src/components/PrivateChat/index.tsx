@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useCallback, KeyboardEvent } from 'react';
 import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Tipos
+// Types
 export interface ChatMessage {
   id: number;
   conversation: number;
@@ -24,7 +24,8 @@ export interface MessagePagination {
 
 export interface PrivateChatProps {
   conversationId: number;
-  token?: string;
+  currentUserId: number;
+  currentUserType: string;
   initialMessages?: ChatMessage[];
   onError?: (error: Error) => void;
 }
@@ -102,18 +103,18 @@ const DateSeparator = ({ date }: DateSeparatorProps) => (
 
 export default function PrivateChat({
   conversationId,
-  token: externalToken,
+  currentUserId,
+  currentUserType,
   initialMessages = [],
   onError
 }: PrivateChatProps) {
-  // Estados
+  // States
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [nextPageUrl, setNextPageUrl] = useState<string | null>(null);
   const [hasMoreMessages, setHasMoreMessages] = useState(false);
@@ -154,28 +155,27 @@ export default function PrivateChat({
     }
   };
 
-  function getInterlocutorName(msgs: ChatMessage[], me: number): string {
-    // Primeiro tenta encontrar uma mensagem de outro participante
-    const otherMessage = msgs.find(m => m.sender !== me);
+  function getInterlocutorName(msgs: ChatMessage[], userId: number): string {
+    // First try to find a message from another participant
+    const otherMessage = msgs.find(m => m.sender !== userId);
     if (otherMessage) return otherMessage.sender_username;
 
-    // Se não encontrar, procura uma mensagem do usuário atual para obter o recipient
-    const myMessage = msgs.find(m => m.sender === me);
+    // If not found, look for a message from the current user to get the recipient
+    const myMessage = msgs.find(m => m.sender === userId);
     if (myMessage) return myMessage.recipient_username;
 
-    // Caso não haja mensagens
+    // If there are no messages
     return "Nova conversa";
   }
 
-
   useEffect(() => {
-    if (currentUserId !== null && messages.length > 0) {
+    if (messages.length > 0) {
       const interlocutorName = getInterlocutorName(messages, currentUserId);
       setChatInfo({
         name: interlocutorName,
         status: "Online"
       });
-    } else if (currentUserId) {
+    } else {
       setChatInfo({
         name: "Nova conversa",
         status: "Online"
@@ -187,16 +187,9 @@ export default function PrivateChat({
     const initialize = async () => {
       setIsLoading(true);
       try {
-        const token = externalToken || await fetchTokenFromServer();
+        const token = await fetchTokenFromServer();
         if (!token) throw new Error('Token de autenticação não disponível');
         setAccessToken(token);
-
-        try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          setCurrentUserId(payload.user_id);
-        } catch (e) {
-          console.error('Erro ao decodificar token:', e);
-        }
       } catch (error) {
         handleError(error instanceof Error ? error : new Error('Erro desconhecido'));
       } finally {
@@ -204,7 +197,7 @@ export default function PrivateChat({
       }
     };
     initialize();
-  }, [externalToken, handleError]);
+  }, [handleError]);
 
   const fetchMessages = useCallback(async (url?: string) => {
     if (!accessToken) return;
@@ -240,24 +233,6 @@ export default function PrivateChat({
       fetchMessages();
     }
   }, [accessToken, fetchMessages]);
-
-  // useEffect para atualizar chatInfo
-  useEffect(() => {
-    if (currentUserId) {
-      if (messages.length > 0) {
-        const interlocutorName = getInterlocutorName(messages, currentUserId);
-        setChatInfo({
-          name: interlocutorName,
-          status: "Online"
-        });
-      } else {
-        setChatInfo({
-          name: "Nova conversa",
-          status: "Online"
-        });
-      }
-    }
-  }, [messages, currentUserId]);
 
   const loadMoreMessages = useCallback(() => {
     if (nextPageUrl && !isLoadingMore) {
@@ -389,9 +364,10 @@ export default function PrivateChat({
   }, [messages, scrollToBottom, currentUserId]);
 
   const isCurrentUser = useCallback((senderId: number) => senderId === currentUserId, [currentUserId]);
-  const isAdvisor = useCallback((senderId: number, username: string) =>
-    senderId < 50 || username.toLowerCase().includes('advisor'),
-    []);
+  const isAdvisor = useCallback((senderId: number, username: string) => 
+    currentUserType === 'advisor' ? senderId === currentUserId : senderId !== currentUserId && currentUserType !== 'student',
+    [currentUserId, currentUserType]);
+
   const formatDate = useCallback((timestamp: string) => {
     const dateObj = new Date(timestamp);
     return {
@@ -415,7 +391,7 @@ export default function PrivateChat({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Cabeçalho do chat */}
+      {/* Chat header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -452,7 +428,7 @@ export default function PrivateChat({
         </div>
       </motion.div>
 
-      {/* Container de mensagens */}
+      {/* Messages container */}
       <div
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-3 bg-gradient-to-b from-gray-50 to-white min-h-[50vh]"
@@ -528,7 +504,7 @@ export default function PrivateChat({
         )}
       </div>
 
-      {/* Área de entrada */}
+      {/* Input area */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -593,7 +569,7 @@ export default function PrivateChat({
             )}
           </div>
           <div className="text-xs text-gray-500 italic">
-            {/* Status de digitação aparecerá aqui */}
+            {/* Typing status will appear here */}
           </div>
         </div>
       </motion.div>

@@ -90,6 +90,7 @@ function ConversationsList() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
 
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -99,11 +100,11 @@ function ConversationsList() {
             "Content-Type": "application/json",
           },
         });
-        
+
         if (!response.ok) {
           throw new Error("Erro ao buscar usuário autenticado");
         }
-        
+
         const user: AuthenticatedUser = await response.json();
         setCurrentUserId(user?.user_id || 0);
       } catch (error) {
@@ -173,6 +174,8 @@ function ConversationsList() {
     }
   };
 
+
+
   return (
     <div className="flex flex-col h-full">
       {/* Busca */}
@@ -235,6 +238,8 @@ const ChatPage = () => {
   const { conversationId } = useConversation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [me, setMe] = useState<AuthenticatedUser | null>(null);
+
 
   // Detectar tamanho de tela para responsividade
   useEffect(() => {
@@ -253,6 +258,30 @@ const ChatPage = () => {
 
     return () => window.removeEventListener('resize', handleResize);
   }, [conversationId]);
+
+  // Buscar usuário autenticado
+  useEffect(() => {
+    async function fetchMe() {
+      try {
+        const response = await fetch("/api/users/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar usuário autenticado");
+        }
+
+        const user: AuthenticatedUser = await response.json();
+        setMe(user);
+      } catch (error) {
+        console.error("Erro ao buscar usuário:", error);
+      }
+    }
+    fetchMe();
+  }, []);
 
   return (
     <div className="container mx-auto py-6 px-4 h-[calc(100vh-64px)]">
@@ -318,8 +347,12 @@ const ChatPage = () => {
                 transition={{ duration: 0.2 }}
                 className="h-full flex-1"
               >
-                {conversationId ? (
-                  <PrivateChat conversationId={conversationId} />
+                {conversationId && me ? (
+                  <PrivateChat
+                    conversationId={conversationId}
+                    currentUserId={me.user_id}
+                    currentUserType={me.user_type}
+                  />
                 ) : (
                   <div className="flex items-center justify-center h-full bg-gray-50">
                     <div className="text-center p-8 max-w-md">
